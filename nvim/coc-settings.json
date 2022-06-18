@@ -1,0 +1,83 @@
+{   "languageserver": {
+        "haskell": {
+            "command": "haskell-language-server-wrapper",
+            "args": ["--lsp"],
+            "rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
+            "filetypes": ["haskell", "lhaskell"]
+        },
+        "haxe": {
+            "command": "haxe-language-server",
+            "filetypes": ["haxe"],
+            "trace.server": "verbose",
+            "initializationOptions": {
+                "displayArguments": ["build.hxml"]
+            },
+            "settings": {
+                "haxe.executable": "haxe"
+            }
+        },
+        "zig": {
+            "command": "zls",
+            "filetypes": ["zig"]
+        },
+        "d": {
+            "command": "serve-d",
+            "filetypes": ["d"],
+            "rootPatterns": ["dub.json", "dub.sdl"],
+            "settings": {
+            }
+        },
+        "nix": {
+            "command": "rnix-lsp",
+            "filetypes": [
+                "nix"
+            ]
+        },
+        "kotlin": {
+            "command": "kotlin-language-server",
+            "rootPatterns": ["build.gradle", "build.gradle.kts"],
+            "filetypes": [
+                "kotlin"
+            ]
+        },
+        "erlang": {
+            "command": "erlang_ls",
+            "filetypes": [
+                "erlang"
+            ]
+        }
+    },
+
+    "lua.checkForUpdates": "disabled",
+
+    "java.autobuild.enabled": false,
+
+    "clangd.disableSnippetCompletion": true,
+
+    "javascript.suggestionActions.enabled": false,
+
+    "rust.unstable_features": true,
+    "rust.crate_blacklist": [],
+    "rust.full_docs": true,
+    "rust.clippy_preference": "on",
+
+    "jedi.enable": true,
+    "jedi.markupKindPreferred": "markdown",
+    "jedi.trace.server": "off",
+    "jedi.jediSettings.autoImportModules": [],
+    "jedi.executable.command": "jedi-language-server",
+    "jedi.codeAction.nameExtractFunction": "jls_extract_def",
+    "jedi.codeAction.nameExtractVariable": "jls_extract_var",
+    "jedi.completion.disableSnippets": false,
+    "jedi.completion.resolveEagerly": false,
+    "jedi.jediSettings.caseInsensitiveCompletion": true,
+    "jedi.workspace.extraPaths": [],
+    "jedi.workspace.symbols.maxSymbols": 20,
+    "jedi.workspace.symbols.ignoreFolders": [
+        ".nox",
+        ".tox",
+        ".venv",
+        "__pycache__",
+        "venv"
+    ]
+}
