@@ -1,0 +1,225 @@
+# Default config for sway
+#
+# Copy this to ~/.config/sway/config and edit it to your liking.
+#
+# Read `man 5 sway` for a complete reference.
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Swaynag wrapper for programmatic control
+set $nag exec swaynagmode
+#
+set $kibindsym bindsym --to-code
+
+### Output configuration
+#
+output * bg ~/Pictures/kimi-no-na-wa-wallpaper-hd.png fill
+
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+
+exec swayidle -w \
+         timeout 300 'swaylock -f -c 000000; swaymsg "output * dpms off"' \
+            resume 'swaymsg "output * dpms on"' \
+         before-sleep 'swaylock -f -c 000000' \
+
+
+swaynag_command $nag \
+
+font Iosevka 10
+
+### Key bindings
+#
+# Basics:
+#
+    # Start a terminal
+    bindsym $mod+Return exec alacritty
+
+    # Kill focused window
+    bindsym $mod+Shift+c kill
+
+    # Application launcher
+    bindsym $mod+r exec bemenu-run --prompt "launch" --fn "Iosevka 11"
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+    # Reload the configuration file
+    bindsym $mod+Shift+l reload
+
+    # Exit sway (logs you out of your Wayland session)
+    bindsym \
+        $mod+Shift+s \
+        $nag \
+            -t warning \
+            -i 3 \
+            -m 'What do you wanna do' \
+            -B 'Reload' 'swaymsg reload' \
+            -B 'Exit' 'swaymsg exit' \
+            -B 'Reboot' 'reboot' \
+            -B 'Shutdown' 'shutdown now' \
+
+#
+# Moving around:
+#
+    bindsym {
+        # Move your focus around
+        $mod+Left focus left
+        $mod+Down focus down
+        $mod+Up focus up
+        $mod+Right focus right
+
+        # Move the focused window with the same, but add Shift
+        $mod+Shift+Left move left
+        $mod+Shift+Down move down
+        $mod+Shift+Up move up
+        $mod+Shift+Right move right
+
+        # Move focus to next or previous
+        $mod+Tab focus next
+        $mod+Shift+Tab focus prev
+    }
+
+#
+# Workspaces:
+#
+    # The key names are CZECH
+    # Switch to workspace
+    bindsym $mod+plus workspace number 1
+    bindsym $mod+ecaron workspace number 2
+    bindsym $mod+scaron workspace number 3
+    bindsym $mod+ccaron workspace number 4
+    # Move focused container to workspace
+    bindsym $mod+Shift+plus move container to workspace number 1
+    bindsym $mod+Shift+ecaron move container to workspace number 2
+    bindsym $mod+Shift+scaron move container to workspace number 3
+    bindsym $mod+Shift+ccaron move container to workspace number 4
+    # Switch to workspace relatively
+    bindsym $mod+KP_4 workspace prev
+    bindsym $mod+KP_6 workspace next
+    # Move container relatively
+    bindsym $mod+Shift+KP_Left move container to workspace prev
+    bindsym $mod+Shift+KP_Right move container to workspace next
+
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+b splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout stacking
+    bindsym $mod+w layout tabbed
+    bindsym $mod+e layout toggle split
+
+    # Make the current focus fullscreen
+    bindsym $mod+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+Shift+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+#
+# Scratchpad:
+#
+    # Sway has a "scratchpad", which is a bag of holding for windows.
+    # You can send windows there and get them back later.
+
+    # Move the currently focused window to the scratchpad
+    bindsym $mod+Shift+minus move scratchpad
+
+    # Show the next scratchpad window or hide the focused scratchpad window.
+    # If there are multiple scratchpad windows, this command cycles through them.
+    bindsym $mod+minus scratchpad show
+#
+# Resizing containers:
+#
+mode "resize" {
+    # left will shrink the containers width
+    # right will grow the containers width
+    # up will shrink the containers height
+    # down will grow the containers height
+    bindsym Left resize shrink width 10px
+    bindsym Down resize grow height 10px
+    bindsym Up resize shrink height 10px
+    bindsym Right resize grow width 10px
+
+    # Return to default mode
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+bindsym $mod+Shift+r mode "resize"
+
+#
+# Status bar:
+#
+bar {
+    swaybar_command waybar
+}
+
+# Keyboard layout
+input * {
+    xkb_numlock enable
+    xkb_layout cz,en_US
+    xkb_options compose:caps-altgr
+}
+
+# Layout switching
+$kibindsym $mod+semicolon input "1:1:AT_Translated_Set_2_keyboard" xkb_switch_layout next
+
+#
+# swaynag keyboard control
+#
+mode "nag" {
+    bindsym {
+        Ctrl+d    mode "default"
+
+        Ctrl+c    $nag --exit
+        q         $nag --exit
+        Escape    $nag --exit
+
+        Return    $nag --confirm
+
+        Tab       $nag --select prev
+        Shift+Tab $nag --select next
+
+        Left      $nag --select next
+        Right     $nag --select prev
+
+        Up        $nag --select next
+        Down      $nag --select prev
+    }
+}
+
+#
+# Functional Keys
+#
+bindsym {
+    XF86MonBrightnessDown exec brightnessctl set 5%-
+    XF86MonBrightnessUp exec brightnessctl set +5%
+
+    XF86AudioRaiseVolume exec pactl set-sink-volume @DEFAULT_SINK@ +5%
+    XF86AudioLowerVolume exec pactl set-sink-volume @DEFAULT_SINK@ -5%
+    XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle
+    XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+    # Screenshots
+    Print exec 'grim -g "$(slurp)" - | swappy -f - -o - | wl-copy'
+    Shift+Print exec 'grim - | swappy -f - -o - | wl-copy'
+}
+
+exec systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
+include /etc/sway/config.d/*
