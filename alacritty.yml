@@ -1,0 +1,66 @@
+colors:
+
+  # Default colors
+  primary:
+    background: '#222222'
+    foreground: '#fdf4c1'
+
+  # Normal colors
+  normal:
+    black:   '#131313'
+    red:     '#e11e05'
+    green:   '#00cc00'
+    yellow:  '#b57614'
+    blue:    '#2525da'
+    magenta: '#8f3f71'
+    cyan:    '#00dddd'
+    white:   '#e6e6e6'
+
+  # Bright colors
+  bright:
+    black:   '#52505f'
+    red:     '#fb4933'
+    green:   '#00ff00'
+    yellow:  '#fabd2f'
+    blue:    '#5050dd'
+    magenta: '#d3869b'
+    cyan:    '#00ffff'
+    white:   '#ffffff'
+
+  # Dim colors (Optional)
+  dim:
+    black:   '#000000'
+    red:     '#6d0004'
+    green:   '#006600'
+    yellow:  '#856606'
+    blue:    '#072678'
+    magenta: '#8f3f71'
+    cyan:    '#009999'
+    white:   '#bbbbbb'
+
+
+font:
+  normal:
+    family: Iosevka Term
+    style: Regular
+
+  bold:
+    family: Iosevka Term
+    style: Bold
+
+  italic:
+    family: Iosevka Term
+    style: Italic
+
+  bold_italic:
+    family: Iosevka Term
+    style: Bold Italic
+
+  size: 12
+
+mouse:
+  hide_when_typing: true
+
+key_bindings:
+  - { key: Return, mods: Control, action: SpawnNewInstance }
+  - { key: Back, mods: Control|Shift , action: ResetFontSize }

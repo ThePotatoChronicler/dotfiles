@@ -5,7 +5,7 @@ syntax on
 " set noeol
 " set nofixendofline
 
-let g:mapleader = "ů"
+let g:mapleader = " "
 set list
 set autoindent
 set smartindent
@@ -25,7 +25,7 @@ set undodir=~/.vim/undo
 set undofile
 
 " Makes clipboard be shared with system
-set clipboard+=unnamedplus
+" set clipboard+=unnamedplus
 
 call plug#begin('~/.vim/plugged')
 
@@ -84,6 +84,10 @@ Plug 'dag/vim-fish'
 Plug 'JuliaEditorSupport/julia-vim'
 " Better python highlighting
 Plug 'vim-python/python-syntax'
+" Zig support in Vim
+Plug 'ziglang/zig.vim'
+" Go support in Vim
+Plug 'fatih/vim-go'
 call plug#end()
 
 " Sadly, outdated and breaks some stuff
@@ -135,3 +139,15 @@ let g:rainbow_active = 1
 
 " Lightline theme
 let g:lightline = { 'colorscheme': 'wombat' }
+
+" Coc stuff
+" Fix current line
+nmap <leader>qf  <Plug>(coc-fix-current)
+nmap <leader>d :call CocAction('jumpDefinition', 'tabe')<CR>
+
+" No autoformatting from zig
+let g:zig_fmt_autosave = 0
+
+" No LSP
+let g:go_gopls_enabled = 0
+let g:go_fmt_autosave = 0
