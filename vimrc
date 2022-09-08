@@ -1,4 +1,4 @@
-filetype plugin on
+filetype indent plugin on
 syntax on
 
 " No newline at end of file
@@ -12,7 +12,6 @@ set smartindent
 set number relativenumber
 set tabstop=4
 set shiftwidth=4
-set signcolumn=no
 set title
 set updatetime=300
 set noshowmode " Hides the mode in bar under status line
@@ -20,6 +19,10 @@ set ruler
 set mouse=a
 set cinkeys-=0#
 set notimeout " Stops the timeout on unfinished key combinations
+
+" Always show the signcolumn, otherwise it would shift the text each time
+" diagnostics appear/become resolved.
+set signcolumn=yes
 
 set undodir=~/.vim/undo
 set undofile
@@ -79,7 +82,7 @@ Plug 'udalov/kotlin-vim'
 " Changing colors
 Plug 'felixhummel/setcolors.vim'
 " Fish support
-Plug 'dag/vim-fish'
+Plug 'dag/vim-fish', {'for': 'fish'}
 " Julia support
 Plug 'JuliaEditorSupport/julia-vim'
 " Better python highlighting
@@ -88,7 +91,28 @@ Plug 'vim-python/python-syntax'
 Plug 'ziglang/zig.vim'
 " Go support in Vim
 Plug 'fatih/vim-go'
+" Partial Astro support
+Plug 'wuelnerdotexe/vim-astro'
+" Ansible support
+Plug 'pearofducks/ansible-vim'
+" HTML syntax highlighting support
+Plug 'othree/html5.vim'
+" Javascript support
+Plug 'pangloss/vim-javascript'
+" Svelte support
+Plug 'evanleck/vim-svelte', {'branch': 'main'}
+" Nim support
+Plug 'zah/nim.vim'
 call plug#end()
+
+
+let g:coc_global_extensions = [
+			\'coc-json', 'coc-git', 'coc-tsserver', 'coc-clangd',
+			\'coc-html', 'coc-htmlhint', 'coc-html-css-support',
+			\'coc-css', 'coc-cssmodules', 'coc-stylelintplus',
+			\'coc-jedi', 'coc-lua', 'coc-yaml', 'coc-eslint',
+			\'coc-styled-components', 'coc-angular', 'coc-svelte'
+			\]
 
 " Sadly, outdated and breaks some stuff
 " colorscheme briofita
@@ -151,3 +175,15 @@ let g:zig_fmt_autosave = 0
 " No LSP
 let g:go_gopls_enabled = 0
 let g:go_fmt_autosave = 0
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice.
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"

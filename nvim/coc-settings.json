@@ -18,7 +18,8 @@
         },
         "zig": {
             "command": "zls",
-            "filetypes": ["zig"]
+            "filetypes": ["zig"],
+            "rootPatterns": ["build.zig"]
         },
         "d": {
             "command": "serve-d",
@@ -45,12 +46,18 @@
             "filetypes": [
                 "erlang"
             ]
+        },
+        "astro": {
+            "command": "astro-ls",
+            "args": ["--stdio"],
+            "rootPatterns": ["package.json"],
+            "filetypes": [
+                "astro"
+            ]
         }
     },
 
     "lua.checkForUpdates": "disabled",
-
-    "java.autobuild.enabled": false,
 
     "clangd.disableSnippetCompletion": true,
 
@@ -79,5 +86,6 @@
         ".venv",
         "__pycache__",
         "venv"
-    ]
+    ],
+    "svelte.enable-ts-plugin": true
 }

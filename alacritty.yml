@@ -11,7 +11,7 @@ colors:
     red:     '#e11e05'
     green:   '#00cc00'
     yellow:  '#b57614'
-    blue:    '#2525da'
+    blue:    '#3535da'
     magenta: '#8f3f71'
     cyan:    '#00dddd'
     white:   '#e6e6e6'
@@ -22,7 +22,7 @@ colors:
     red:     '#fb4933'
     green:   '#00ff00'
     yellow:  '#fabd2f'
-    blue:    '#5050dd'
+    blue:    '#5f5fdd'
     magenta: '#d3869b'
     cyan:    '#00ffff'
     white:   '#ffffff'
@@ -56,7 +56,7 @@ font:
     family: Iosevka Term
     style: Bold Italic
 
-  size: 12
+  size: 22
 
 mouse:
   hide_when_typing: true
