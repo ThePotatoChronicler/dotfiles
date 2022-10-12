@@ -28,21 +28,20 @@ function fish_prompt --description 'Rainbow prompt :)'
     printf '%s[' (set_color white)
 
     # Checks if the variable is set, if not, sets it
-    if test -z "$RAINBOW_PROMPT"
-        set -g RAINBOW_PROMPT (random)
-    end
+    set -q RAINBOW_PROMPT || set -g RAINBOW_PROMPT (random)
 
     # Prints the user's name
     for i in (string split '' $USER)
         set_color ( $__fish_config_dir/hsl_to_rgb/hsl_to_rgb $RAINBOW_PROMPT 1 0.5 )
-        set RAINBOW_PROMPT (math "$RAINBOW_PROMPT +1.5") # Change the number to set how fast the color changes
+        set RAINBOW_PROMPT (math "$RAINBOW_PROMPT +1.7") # Change the number to set how fast the color changes
         printf "$i"
     end
 
     # Prints the rest. kinda confusing with that large amount of formatting
-    printf '%s@%s%s%s] %s%s %s\f\r%s%s ' \
+    printf '%s@%s%s%s] %s%s %s[%s] %s\f\r%s%s ' \
         (set_color bryellow) (set_color brcyan) (prompt_hostname) (set_color white)\
-        (set_color $fish_color_cwd) $pwdr "$pipestatus_string" (set_color $status_color) $prompt_sign
+        (set_color $fish_color_cwd) $pwdr (set_color brblack) (date +%T) "$pipestatus_string" \
+        (set_color $status_color) $prompt_sign
 
     printf '%s' (set_color normal)
 end

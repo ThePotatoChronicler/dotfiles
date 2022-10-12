@@ -34,13 +34,6 @@
                 "nix"
             ]
         },
-        "kotlin": {
-            "command": "kotlin-language-server",
-            "rootPatterns": ["build.gradle", "build.gradle.kts"],
-            "filetypes": [
-                "kotlin"
-            ]
-        },
         "erlang": {
             "command": "erlang_ls",
             "filetypes": [
@@ -63,11 +56,6 @@
 
     "javascript.suggestionActions.enabled": false,
 
-    "rust.unstable_features": true,
-    "rust.crate_blacklist": [],
-    "rust.full_docs": true,
-    "rust.clippy_preference": "on",
-
     "jedi.enable": true,
     "jedi.markupKindPreferred": "markdown",
     "jedi.trace.server": "off",
@@ -87,5 +75,6 @@
         "__pycache__",
         "venv"
     ],
-    "svelte.enable-ts-plugin": true
+    "svelte.enable-ts-plugin": true,
+    "java.completion.filteredTypes": []
 }

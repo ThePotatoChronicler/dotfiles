@@ -111,7 +111,11 @@ let g:coc_global_extensions = [
 			\'coc-html', 'coc-htmlhint', 'coc-html-css-support',
 			\'coc-css', 'coc-cssmodules', 'coc-stylelintplus',
 			\'coc-jedi', 'coc-lua', 'coc-yaml', 'coc-eslint',
-			\'coc-styled-components', 'coc-angular', 'coc-svelte'
+			\'coc-styled-components', 'coc-angular', 'coc-svelte',
+			\'coc-psalm', 'coc-xml', 'coc-java', 'coc-kotlin',
+			\'coc-groovy', 'coc-tailwindcss', 'coc-yank',
+			\'coc-vetur', 'coc-julia', '@yaegassy/coc-ansible',
+			\'coc-rust-analyzer'
 			\]
 
 " Sadly, outdated and breaks some stuff

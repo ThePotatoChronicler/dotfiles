@@ -8,8 +8,12 @@ command -q nvim && set -x EDITOR nvim
 set -x GEM_HOME "$HOME/.gem/ruby/3.0.0"
 
 # pnpm
-set -gx PNPM_HOME "/home/potato/.local/share/pnpm"
+set -gx PNPM_HOME "$HOME/.local/share/pnpm"
 set -gx PATH "$PNPM_HOME" $PATH
+
+# tabtab source for packages
+# uninstall by removing these lines
+[ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
 # pnpm end
 
 # Perl stuff
@@ -24,7 +28,10 @@ set fish_cursor_insert line
 set fish_cursor_replace_one underscore
 
 # OCaml stuff
-eval (opam env)
+command -q opam && eval (opam env)
+
+# Rust (cargo) stuff
+command -q cargo && set PATH "$HOME/.cargo/bin" $PATH
 
 # If fish is not running interactively, end the script here
 if not status is-interactive
@@ -36,4 +43,3 @@ command -q lsd && alias ls='lsd'
 command -q nvim && alias v='nvim' || alias v='vim'
 alias nmcli='nmcli --color=auto --ask'
 alias wdiff="wdiff -n -w '"\033"[30;41m' -x '"\033"[0m' -y '"\033"[30;42m' -z '"\033"[0m'"
-
