@@ -1,0 +1,3 @@
+source /usr/share/gdb-dashboard/.gdbinit
+set disassembly-flavor intel
+set debuginfod enabled on

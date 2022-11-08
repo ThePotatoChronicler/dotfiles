@@ -3,9 +3,11 @@ command -q bat && set -x PAGER 'bat'
 command -q nvim && set -x MANPAGER 'nvim +Man!'
 command -q firefox && set -x BROWSER firefox
 command -q alacritty && set -x TERMINAL alacritty
-set -x DOTNET_CLI_TELEMETRY_OPTOUT 1
-command -q nvim && set -x EDITOR nvim
-set -x GEM_HOME "$HOME/.gem/ruby/3.0.0"
+set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
+command -q nvim && set -gx EDITOR nvim
+set -gx GEM_HOME "$HOME/.gem/ruby/3.0.0"
+
+test -d "$HOME/Scripts" && set PATH "$HOME/Scripts" $PATH
 
 # pnpm
 set -gx PNPM_HOME "$HOME/.local/share/pnpm"
@@ -17,15 +19,10 @@ set -gx PATH "$PNPM_HOME" $PATH
 # pnpm end
 
 # Perl stuff
-set -x PERL_MB_OPT "--install_base $HOME/.local/lib/perl5"
-set -x PERL_MM_OPT "INSTALL_BASE=$HOME/.local/lib/perl5"
-set -x PERL5LIB "$HOME/.local/lib/perl5/lib/perl5"
-set -x PERL_LOCAL_LIB_ROOT "$HOME/perl5:$PERL_LOCAL_LIB_ROOT"
-
-# Fish settings
-set fish_cursor_default block
-set fish_cursor_insert line
-set fish_cursor_replace_one underscore
+set -gx PERL_MB_OPT "--install_base $HOME/.local/lib/perl5"
+set -gx PERL_MM_OPT "INSTALL_BASE=$HOME/.local/lib/perl5"
+set -gx PERL5LIB "$HOME/.local/lib/perl5/lib/perl5"
+set -gx PERL_LOCAL_LIB_ROOT "$HOME/perl5:$PERL_LOCAL_LIB_ROOT"
 
 # OCaml stuff
 command -q opam && eval (opam env)
@@ -33,13 +30,42 @@ command -q opam && eval (opam env)
 # Rust (cargo) stuff
 command -q cargo && set PATH "$HOME/.cargo/bin" $PATH
 
+# pyenv stuff
+if command -q pyenv
+    set -gx PYENV_ROOT "$HOME/.pyenv"
+    set PATH "$PYENV_ROOT/bin" $PATH
+    pyenv init - | source
+end
+
+# Ruby stuff
+command -q gem && set PATH "$HOME/.gem/ruby/3.0.0/bin" $PATH
+
+# Nim stuff
+if command -q choosenim || command -q nim
+    set -gx PATH "$HOME/.nimble/bin" $PATH
+end
+
 # If fish is not running interactively, end the script here
 if not status is-interactive
     exit
 end
 
-# Aliasses
+# Fish settings
+set -g fish_cursor_default block
+set -g fish_cursor_insert line
+set -g fish_cursor_replace_one underscore
+
+# Aliasses and Abbreviations
+command -q docker-compose && abbr -a -g dcc docker-compose
+command -q docker && abbr -a -g dkr docker
+command -q cargo && abbr -a -g cg cargo
+if command -q nvim
+    abbr -a -g e nvim
+else if command -q vim
+    abbr -a -g e vim
+end
+
 command -q lsd && alias ls='lsd'
-command -q nvim && alias v='nvim' || alias v='vim'
 alias nmcli='nmcli --color=auto --ask'
 alias wdiff="wdiff -n -w '"\033"[30;41m' -x '"\033"[0m' -y '"\033"[30;42m' -z '"\033"[0m'"
+command -q pnpm && alias pn='pnpm'

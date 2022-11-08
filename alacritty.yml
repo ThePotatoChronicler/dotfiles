@@ -56,7 +56,7 @@ font:
     family: Iosevka Term
     style: Bold Italic
 
-  size: 22
+  size: 12
 
 mouse:
   hide_when_typing: true

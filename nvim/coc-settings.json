@@ -21,13 +21,6 @@
             "filetypes": ["zig"],
             "rootPatterns": ["build.zig"]
         },
-        "d": {
-            "command": "serve-d",
-            "filetypes": ["d"],
-            "rootPatterns": ["dub.json", "dub.sdl"],
-            "settings": {
-            }
-        },
         "nix": {
             "command": "rnix-lsp",
             "filetypes": [
@@ -46,6 +39,51 @@
             "rootPatterns": ["package.json"],
             "filetypes": [
                 "astro"
+            ],
+            "initializationOptions": {
+                "typescript": {
+                    "serverPath": "typescript/lib/tsserverlibrary.js"
+                },
+                "environment": "node"
+            }
+        },
+        "racket": {
+            "command": "racket",
+            "args": ["-l", "racket-langserver"],
+            "filetypes": [
+                "racket",
+                "slideshow",
+                "scribble"
+            ]
+        },
+        "ocaml": {
+            "command": "ocamllsp",
+            "rootPatterns": [
+                "dune-project"
+            ],
+            "filetypes": [
+                "ocaml",
+                "opam",
+                "dune"
+            ]
+        },
+        "v": {
+            "command": "v",
+            "args": ["ls"],
+            "filetypes": [
+                "vlang"
+            ]
+        },
+        "cmake": {
+            "command": "cmake-language-server",
+            "filetypes": [
+                "cmake"
+            ]
+        },
+        "nim": {
+            "command": "nimlsp",
+            "filetypes": [
+                "nim"
             ]
         }
     },
@@ -55,6 +93,13 @@
     "clangd.disableSnippetCompletion": true,
 
     "javascript.suggestionActions.enabled": false,
+    "typescript.suggestionActions.enabled": false,
+
+    "javascript.format.semicolons": "insert",
+    "typescript.format.semicolons": "insert",
+
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
 
     "jedi.enable": true,
     "jedi.markupKindPreferred": "markdown",
@@ -76,5 +121,11 @@
         "venv"
     ],
     "svelte.enable-ts-plugin": true,
-    "java.completion.filteredTypes": []
+    "java.completion.filteredTypes": [],
+
+    "julia.executablePath": "/usr/bin/julia",
+
+    "powershell.integratedConsole.showOnStartup": false,
+
+    "xml.java.home": "/usr/lib/jvm/java-17-graalvm"
 }

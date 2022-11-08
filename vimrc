@@ -5,41 +5,30 @@ syntax on
 " set noeol
 " set nofixendofline
 
-let g:mapleader = " "
 set list
-set autoindent
 set smartindent
-set number relativenumber
-set tabstop=4
-set shiftwidth=4
-set title
-set updatetime=300
-set noshowmode " Hides the mode in bar under status line
-set ruler
-set mouse=a
+set relativenumber
 set cinkeys-=0#
 set notimeout " Stops the timeout on unfinished key combinations
+set tabstop=4
+set shiftwidth=4
 
 " Always show the signcolumn, otherwise it would shift the text each time
 " diagnostics appear/become resolved.
 set signcolumn=yes
 
-set undodir=~/.vim/undo
-set undofile
-
 " Makes clipboard be shared with system
 " set clipboard+=unnamedplus
 
 call plug#begin('~/.vim/plugged')
-
+" Sensible defaults
+Plug 'sheerun/vimrc'
+" Secure modelines
+Plug 'ciaranm/securemodelines'
 " Discord status
 Plug 'vimsence/vimsence'
-" Rust
-Plug 'rust-lang/rust.vim'
 " C#
 Plug 'OmniSharp/omnisharp-vim'
-" Semantic Cxx highlighting (used for semantic highlighting in coc.nvim + coc-clangd)
-Plug 'jackguo380/vim-lsp-cxx-highlight'
 " Commenting
 Plug 'preservim/nerdcommenter'
 " Auto-close brackets
@@ -50,7 +39,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " Indent lines
 Plug 'Yggdroot/indentLine'
 " Language pack
-" Plug 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot'
 " File browser
 Plug 'preservim/nerdtree'
 " Themes
@@ -61,50 +50,21 @@ Plug 'ap/vim-css-color'
 Plug 'dracula/vim', { 'as': 'dracula' }
 " Return cursor to last position
 Plug 'farmergreg/vim-lastplace'
-" Crystal lang
-Plug 'vim-crystal/vim-crystal'
 " R lang support
 Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 " southernlights theme
 Plug 'jalvesaq/southernlights'
-" Mainly for retarded haskell indentation
-Plug 'raichoo/haskell-vim'
 " Rainbow brackets for different levels
 Plug 'luochen1990/rainbow'
-" Auto-detect indent
-Plug 'tpope/vim-sleuth'
 " Popular solarized theme
 Plug 'altercation/vim-colors-solarized'
 " Lightline
 Plug 'itchyny/lightline.vim'
-" Kotlin support
-Plug 'udalov/kotlin-vim'
 " Changing colors
 Plug 'felixhummel/setcolors.vim'
-" Fish support
-Plug 'dag/vim-fish', {'for': 'fish'}
-" Julia support
-Plug 'JuliaEditorSupport/julia-vim'
-" Better python highlighting
-Plug 'vim-python/python-syntax'
-" Zig support in Vim
-Plug 'ziglang/zig.vim'
-" Go support in Vim
-Plug 'fatih/vim-go'
 " Partial Astro support
 Plug 'wuelnerdotexe/vim-astro'
-" Ansible support
-Plug 'pearofducks/ansible-vim'
-" HTML syntax highlighting support
-Plug 'othree/html5.vim'
-" Javascript support
-Plug 'pangloss/vim-javascript'
-" Svelte support
-Plug 'evanleck/vim-svelte', {'branch': 'main'}
-" Nim support
-Plug 'zah/nim.vim'
 call plug#end()
-
 
 let g:coc_global_extensions = [
 			\'coc-json', 'coc-git', 'coc-tsserver', 'coc-clangd',
@@ -115,7 +75,9 @@ let g:coc_global_extensions = [
 			\'coc-psalm', 'coc-xml', 'coc-java', 'coc-kotlin',
 			\'coc-groovy', 'coc-tailwindcss', 'coc-yank',
 			\'coc-vetur', 'coc-julia', '@yaegassy/coc-ansible',
-			\'coc-rust-analyzer'
+			\'coc-rust-analyzer', 'coc-docker', 'coc-perl',
+			\'@yaegassy/coc-nginx', 'coc-sql', 'coc-solargraph',
+			\'coc-dlang', 'coc-snippets', 'coc-powershell'
 			\]
 
 " Sadly, outdated and breaks some stuff
@@ -166,7 +128,12 @@ let g:markdown_syntax_conceal=0
 let g:rainbow_active = 1
 
 " Lightline theme
-let g:lightline = { 'colorscheme': 'wombat' }
+let g:lightline = {
+			\'colorscheme': 'wombat',
+			\'active': {
+			\	'left': [['mode', 'paste'], ['readonly', 'relativepath', 'modified']],
+			\	}
+			\}
 
 " Coc stuff
 " Fix current line
