@@ -64,6 +64,8 @@ Plug 'itchyny/lightline.vim'
 Plug 'felixhummel/setcolors.vim'
 " Partial Astro support
 Plug 'wuelnerdotexe/vim-astro'
+" Same-word highlighting for CoC
+Plug 'IngoMeyer441/coc_current_word'
 call plug#end()
 
 let g:coc_global_extensions = [
@@ -77,7 +79,9 @@ let g:coc_global_extensions = [
 			\'coc-vetur', 'coc-julia', '@yaegassy/coc-ansible',
 			\'coc-rust-analyzer', 'coc-docker', 'coc-perl',
 			\'@yaegassy/coc-nginx', 'coc-sql', 'coc-solargraph',
-			\'coc-dlang', 'coc-snippets', 'coc-powershell'
+			\'coc-dlang', 'coc-snippets', 'coc-powershell',
+			\'coc-texlab', 'coc-highlight', 'coc-explorer',
+			\'coc-deno'
 			\]
 
 " Sadly, outdated and breaks some stuff
@@ -127,7 +131,7 @@ let g:markdown_syntax_conceal=0
 " Rainbow leveled brackets
 let g:rainbow_active = 1
 
-" Lightline theme
+" Lightline config
 let g:lightline = {
 			\'colorscheme': 'wombat',
 			\'active': {
@@ -138,7 +142,12 @@ let g:lightline = {
 " Coc stuff
 " Fix current line
 nmap <leader>qf  <Plug>(coc-fix-current)
+" Jump to definitin
 nmap <leader>d :call CocAction('jumpDefinition', 'tabe')<CR>
+" Open file explorer
+nmap <leader>e <Cmd>CocCommand explorer<CR>
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
 
 " No autoformatting from zig
 let g:zig_fmt_autosave = 0
@@ -158,3 +167,4 @@ endif
 " <C-g>u breaks current undo, please make your own choice.
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+

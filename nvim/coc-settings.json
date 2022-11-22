@@ -127,5 +127,7 @@
 
     "powershell.integratedConsole.showOnStartup": false,
 
-    "xml.java.home": "/usr/lib/jvm/java-17-graalvm"
+    "xml.java.home": "/usr/lib/jvm/java-17-graalvm",
+
+    "colors.enable": true
 }

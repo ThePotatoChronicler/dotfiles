@@ -7,14 +7,14 @@ set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
 command -q nvim && set -gx EDITOR nvim
 set -gx GEM_HOME "$HOME/.gem/ruby/3.0.0"
 
+# >:[
+set -gx ANSIBLE_NOCOWS 1
+
 test -d "$HOME/Scripts" && set PATH "$HOME/Scripts" $PATH
 
 # pnpm
 set -gx PNPM_HOME "$HOME/.local/share/pnpm"
 set -gx PATH "$PNPM_HOME" $PATH
-
-# tabtab source for packages
-# uninstall by removing these lines
 [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
 # pnpm end
 
@@ -56,16 +56,16 @@ set -g fish_cursor_insert line
 set -g fish_cursor_replace_one underscore
 
 # Aliasses and Abbreviations
-command -q docker-compose && abbr -a -g dcc docker-compose
-command -q docker && abbr -a -g dkr docker
-command -q cargo && abbr -a -g cg cargo
+command -q docker-compose && abbr -ag dcc docker-compose
+command -q docker && abbr -ag dkr docker
+command -q cargo && abbr -ag cg cargo
 if command -q nvim
-    abbr -a -g e nvim
+    abbr -ag e nvim
 else if command -q vim
-    abbr -a -g e vim
+    abbr -ag e vim
 end
+command -q pnpm && abbr -ag pn pnpm
 
 command -q lsd && alias ls='lsd'
 alias nmcli='nmcli --color=auto --ask'
 alias wdiff="wdiff -n -w '"\033"[30;41m' -x '"\033"[0m' -y '"\033"[30;42m' -z '"\033"[0m'"
-command -q pnpm && alias pn='pnpm'
