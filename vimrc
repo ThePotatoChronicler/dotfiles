@@ -66,6 +66,8 @@ Plug 'felixhummel/setcolors.vim'
 Plug 'wuelnerdotexe/vim-astro'
 " Same-word highlighting for CoC
 Plug 'IngoMeyer441/coc_current_word'
+" Nightfox theme
+Plug 'EdenEast/nightfox.nvim'
 call plug#end()
 
 let g:coc_global_extensions = [
@@ -84,10 +86,7 @@ let g:coc_global_extensions = [
 			\'coc-deno'
 			\]
 
-" Sadly, outdated and breaks some stuff
-" colorscheme briofita
-
-colorscheme dracula
+colorscheme nightfox
 
 let g:python_highlight_all = 1
 
