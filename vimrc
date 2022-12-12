@@ -25,8 +25,6 @@ call plug#begin('~/.vim/plugged')
 Plug 'sheerun/vimrc'
 " Secure modelines
 Plug 'ciaranm/securemodelines'
-" Discord status
-Plug 'vimsence/vimsence'
 " C#
 Plug 'OmniSharp/omnisharp-vim'
 " Commenting
@@ -83,7 +81,7 @@ let g:coc_global_extensions = [
 			\'@yaegassy/coc-nginx', 'coc-sql', 'coc-solargraph',
 			\'coc-dlang', 'coc-snippets', 'coc-powershell',
 			\'coc-texlab', 'coc-highlight', 'coc-explorer',
-			\'coc-deno', 'coc-calc'
+			\'coc-deno', 'coc-calc', 'coc-discord-rpc'
 			\]
 
 colorscheme nightfox
