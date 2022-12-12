@@ -10,11 +10,11 @@ set -gx GEM_HOME "$HOME/.gem/ruby/3.0.0"
 # >:[
 set -gx ANSIBLE_NOCOWS 1
 
-test -d "$HOME/Scripts" && set PATH "$HOME/Scripts" $PATH
+test -d "$HOME/Scripts" && fish_add_path "$HOME/Scripts"
 
 # pnpm
 set -gx PNPM_HOME "$HOME/.local/share/pnpm"
-set -gx PATH "$PNPM_HOME" $PATH
+fish_add_path "$PNPM_HOME"
 [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
 # pnpm end
 
@@ -28,21 +28,21 @@ set -gx PERL_LOCAL_LIB_ROOT "$HOME/perl5:$PERL_LOCAL_LIB_ROOT"
 command -q opam && eval (opam env)
 
 # Rust (cargo) stuff
-command -q cargo && set PATH "$HOME/.cargo/bin" $PATH
+command -q cargo && fish_add_path "$HOME/.cargo/bin"
 
 # pyenv stuff
 if command -q pyenv
     set -gx PYENV_ROOT "$HOME/.pyenv"
-    set PATH "$PYENV_ROOT/bin" $PATH
+    fish_add_path "$PYENV_ROOT/bin"
     pyenv init - | source
 end
 
 # Ruby stuff
-command -q gem && set PATH "$HOME/.gem/ruby/3.0.0/bin" $PATH
+command -q gem && fish_add_path "$HOME/.gem/ruby/3.0.0/bin"
 
 # Nim stuff
 if command -q choosenim || command -q nim
-    set -gx PATH "$HOME/.nimble/bin" $PATH
+    fish_add_path "$HOME/.nimble/bin"
 end
 
 # If fish is not running interactively, end the script here

@@ -1,6 +1,7 @@
 function fish_prompt --description 'Rainbow prompt :)'
+    set -l HSL_TO_RGB "$__fish_config_dir/hsl_to_rgb/hsl_to_rgb"
 
-    # Here so the test commands don't overwrite it
+    # Here so the other commands don't overwrite it
     set last_pipestatus $pipestatus
 
     # Changes prompt sign if you're roo
@@ -30,16 +31,27 @@ function fish_prompt --description 'Rainbow prompt :)'
     # Checks if the variable is set, if not, sets it
     set -q RAINBOW_PROMPT || set -g RAINBOW_PROMPT (random)
 
+    set -l CHANGE_LEVEL "2.2"
+
     # Prints the user's name
     for i in (string split '' $USER)
-        set_color ( $__fish_config_dir/hsl_to_rgb/hsl_to_rgb $RAINBOW_PROMPT 1 0.5 )
-        set RAINBOW_PROMPT (math "$RAINBOW_PROMPT +1.7") # Change the number to set how fast the color changes
+        set_color ( $HSL_TO_RGB $RAINBOW_PROMPT 1 0.5 )
         printf "$i"
+        set RAINBOW_PROMPT (math "$RAINBOW_PROMPT + $CHANGE_LEVEL") # Change the number to set how fast the color changes
+    end
+
+    # Prints a colored @
+    printf "%s@%s" (set_color bryellow) (set_color brcyan)
+
+    for i in (string split '' (prompt_hostname))
+        set_color ( $HSL_TO_RGB $RAINBOW_PROMPT 1 0.5 )
+        printf "$i"
+        set RAINBOW_PROMPT (math "$RAINBOW_PROMPT + $CHANGE_LEVEL") # Change the number to set how fast the color changes
     end
 
     # Prints the rest. kinda confusing with that large amount of formatting
-    printf '%s@%s%s%s] %s%s %s[%s] %s\f\r%s%s ' \
-        (set_color bryellow) (set_color brcyan) (prompt_hostname) (set_color white)\
+    printf '%s] %s%s %s[%s] %s\f\r%s%s ' \
+        (set_color white) \
         (set_color $fish_color_cwd) $pwdr (set_color brblack) (date +%T) "$pipestatus_string" \
         (set_color $status_color) $prompt_sign
 
