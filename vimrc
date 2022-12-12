@@ -83,7 +83,7 @@ let g:coc_global_extensions = [
 			\'@yaegassy/coc-nginx', 'coc-sql', 'coc-solargraph',
 			\'coc-dlang', 'coc-snippets', 'coc-powershell',
 			\'coc-texlab', 'coc-highlight', 'coc-explorer',
-			\'coc-deno'
+			\'coc-deno', 'coc-calc'
 			\]
 
 colorscheme nightfox
@@ -126,6 +126,7 @@ let g:OmniSharp_server_use_mono = 1
 " Yggdroot/indentLine to NOT hide stuff in json and markdown
 let g:vim_json_conceal = 0
 let g:markdown_syntax_conceal=0
+let g:indentLine_setConceal = 0
 
 " Rainbow leveled brackets
 let g:rainbow_active = 1
@@ -166,4 +167,3 @@ endif
 " <C-g>u breaks current undo, please make your own choice.
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-

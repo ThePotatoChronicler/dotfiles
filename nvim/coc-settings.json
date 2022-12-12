@@ -85,6 +85,12 @@
             "filetypes": [
                 "nim"
             ]
+        },
+        "clojure": {
+            "command": "clojure-lsp",
+            "filetypes": [
+                "clojure"
+            ]
         }
     },
 
