@@ -1,4 +1,8 @@
 #!/usr/bin/env fish
 function fish_greeting
-    command -q fortune && fortune
+    if command -q pokemon-colorscripts
+        pokemon-colorscripts -r --no-title
+    else if command -q fortune
+        fortune
+    end
 end
