@@ -81,7 +81,8 @@ let g:coc_global_extensions = [
 			\'@yaegassy/coc-nginx', 'coc-sql', 'coc-solargraph',
 			\'coc-dlang', 'coc-snippets', 'coc-powershell',
 			\'coc-texlab', 'coc-highlight', 'coc-explorer',
-			\'coc-deno', 'coc-calc', 'coc-discord-rpc'
+			\'coc-deno', 'coc-calc', 'coc-discord-rpc',
+			\'coc-haxe'
 			\]
 
 colorscheme nightfox
