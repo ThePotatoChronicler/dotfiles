@@ -1,28 +1,27 @@
-filetype indent plugin on
-syntax on
-
 " No newline at end of file
 " set noeol
 " set nofixendofline
 
 set list
 set smartindent
-set relativenumber
+set number relativenumber
 set cinkeys-=0#
 set notimeout " Stops the timeout on unfinished key combinations
 set tabstop=4
 set shiftwidth=4
+set undofile
 
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-set signcolumn=yes
+nnoremap <SPACE> <Nop>
+let mapleader=" "
 
 " Makes clipboard be shared with system
 " set clipboard+=unnamedplus
 
+let g:polyglot_disabled = ['zig']
+
 call plug#begin('~/.vim/plugged')
 " Sensible defaults
-Plug 'sheerun/vimrc'
+Plug 'tpope/vim-sensible'
 " Secure modelines
 Plug 'ciaranm/securemodelines'
 " C#
@@ -54,8 +53,6 @@ Plug 'jalvesaq/Nvim-R', {'branch': 'stable'}
 Plug 'jalvesaq/southernlights'
 " Rainbow brackets for different levels
 Plug 'luochen1990/rainbow'
-" Popular solarized theme
-Plug 'altercation/vim-colors-solarized'
 " Lightline
 Plug 'itchyny/lightline.vim'
 " Changing colors
@@ -66,6 +63,17 @@ Plug 'wuelnerdotexe/vim-astro'
 Plug 'IngoMeyer441/coc_current_word'
 " Nightfox theme
 Plug 'EdenEast/nightfox.nvim'
+" For editing gdscript files
+Plug 'habamax/vim-godot'
+" For bazel
+Plug 'google/vim-maktaba'
+Plug 'bazelbuild/vim-bazel'
+" For searching through project
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+" Undo trees
+Plug 'mbbill/undotree'
 call plug#end()
 
 let g:coc_global_extensions = [
@@ -82,7 +90,8 @@ let g:coc_global_extensions = [
 			\'coc-dlang', 'coc-snippets', 'coc-powershell',
 			\'coc-texlab', 'coc-highlight', 'coc-explorer',
 			\'coc-deno', 'coc-calc', 'coc-discord-rpc',
-			\'coc-haxe'
+			\'coc-haxe', 'coc-ltex', 'coc-glslx',
+			\'coc-omnisharp',
 			\]
 
 colorscheme nightfox
@@ -91,10 +100,6 @@ let g:python_highlight_all = 1
 
 " To get rid of checkhealth warning
 let g:python3_host_prog = '/bin/python'
-
-" vimsence settings
-let g:vimsence_small_text = 'neovim'
-let g:vimsence_small_image = 'neovim'
 
 " nerdcommenter settings
 let g:NERDCreateDefaultMappings = 1
@@ -130,6 +135,9 @@ let g:indentLine_setConceal = 0
 " Rainbow leveled brackets
 let g:rainbow_active = 1
 
+" Disable zig autofmt on save
+let g:zig_fmt_autosave = 0
+
 " Lightline config
 let g:lightline = {
 			\'colorscheme': 'wombat',
@@ -148,11 +156,6 @@ nmap <leader>e <Cmd>CocCommand explorer<CR>
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
 
-" No autoformatting from zig
-let g:zig_fmt_autosave = 0
-
-" No LSP
-let g:go_gopls_enabled = 0
 let g:go_fmt_autosave = 0
 
 " Use <c-space> to trigger completion.
@@ -166,3 +169,29 @@ endif
 " <C-g>u breaks current undo, please make your own choice.
 inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Find files using Telescope command-line sugar.
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fh <cmd>Telescope help_tags<cr>
+
+" Manipulating tabs
+nnoremap <leader>tn <cmd>tabnew<cr>
+
+" Treesitter conf
+lua << EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = { "c", "lua", "vim", "query", "javascript", "typescript", "astro", "zig" },
+
+  sync_install = false,
+  auto_install = true,
+
+  highlight = {
+    enable = true,
+    additional_vim_regex_highlighting = false,
+  },
+}
+EOF
+
+nnoremap <leader>u :UndotreeToggle<CR>

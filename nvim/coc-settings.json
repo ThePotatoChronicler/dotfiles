@@ -1,6 +1,6 @@
 {   "languageserver": {
         "haskell": {
-            "command": "haskell-language-server-wrapper",
+            "command": "haskell-language-server",
             "args": ["--lsp"],
             "rootPatterns": ["*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml"],
             "filetypes": ["haskell", "lhaskell"]
@@ -15,11 +15,6 @@
             "settings": {
                 "haxe.executable": "haxe"
             }
-        },
-        "zig": {
-            "command": "zls",
-            "filetypes": ["zig"],
-            "rootPatterns": ["build.zig"]
         },
         "nix": {
             "command": "rnix-lsp",
@@ -91,7 +86,47 @@
             "filetypes": [
                 "clojure"
             ]
-        }
+        },
+        "godot": {
+            "host": "127.0.0.1",
+            "filetypes": [
+                "gdscript"
+            ],
+            "port": 6008
+        },
+        "swift": {
+            "command": "sourcekit-lsp",
+            "filetypes": [
+                "swift"
+            ],
+            "rootPatterns": [
+                "Package.swift"
+            ]
+        },
+        "purescript": {
+            "command": "purescript-language-server",
+            "args": ["--stdio"],
+            "filetypes": ["purescript"],
+            "trace.server": "off",
+            "rootPatterns": ["bower.json", "psc-package.json", "spago.dhall"],
+            "settings": {
+                "purescript": {
+                    "addSpagoSources": true,
+                    "addNpmPath": true, // Set to true if using a local purty install for formatting
+                    "formatter": "purs-tidy"
+                }
+            }
+        },
+        "zig": {
+            "command": "zls",
+            "filetypes": [
+                "zig",
+                "zir",
+            ],
+            "rootPatterns": [
+                "build.zig",
+            ],
+        },
     },
 
     "lua.checkForUpdates": "disabled",
@@ -133,7 +168,23 @@
 
     "powershell.integratedConsole.showOnStartup": false,
 
-    "xml.java.home": "/usr/lib/jvm/java-17-graalvm",
+    "xml.java.home": "/usr/lib/jvm/java-19-graalvm",
 
-    "colors.enable": true
+    "colors.enable": true,
+
+    "zig.path": "/usr/bin/zls",
+
+    "clangd.arguments": [
+        "--query-driver=/usr/lib/zig/zig"
+    ],
+
+    "rpc.buttonEnabled": false,
+    "java.import.gradle.java.home": "/usr/lib/jvm/java-17-graalvm",
+    "rust-analyzer.checkOnSave": false,
+    "java.imports.gradle.wrapper.checksums": [
+      {
+        "sha256": "2c23278a62dc9f96ab11bee897d9f53e6479d6419135e4560ce822a6431df5e5",
+        "allowed": false
+      }
+    ],
 }
