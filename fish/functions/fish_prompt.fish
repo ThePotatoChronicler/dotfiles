@@ -4,7 +4,7 @@ function fish_prompt --description 'Rainbow prompt :)'
     # Here so the other commands don't overwrite it
     set last_pipestatus $pipestatus
 
-    # Changes prompt sign if you're roo
+    # Changes prompt sign if you're root
     if test "$USER" = root
         set prompt_sign '#'
     else
@@ -49,10 +49,15 @@ function fish_prompt --description 'Rainbow prompt :)'
         set RAINBOW_PROMPT (math "$RAINBOW_PROMPT + $CHANGE_LEVEL") # Change the number to set how fast the color changes
     end
 
+    set -l datestring "[$(date +%T)]"
+
+   set -g __fish_git_prompt_color purple
+
     # Prints the rest. kinda confusing with that large amount of formatting
-    printf '%s] %s%s %s[%s] %s\f\r%s%s ' \
+    printf '%s] %s%s%s %s%s %s\f\r%s%s ' \
         (set_color white) \
-        (set_color $fish_color_cwd) $pwdr (set_color brblack) (date +%T) "$pipestatus_string" \
+        (set_color $fish_color_cwd) $pwdr (fish_git_prompt || printf "") \
+        (set_color brblack) $datestring "$pipestatus_string" \
         (set_color $status_color) $prompt_sign
 
     printf '%s' (set_color normal)

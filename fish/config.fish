@@ -1,14 +1,25 @@
 # Environment
+fish_add_path "$HOME/.local/bin"
 command -q bat && set -x PAGER 'bat'
 command -q nvim && set -x MANPAGER 'nvim +Man!'
-command -q firefox && set -x BROWSER firefox
+
+## Browser
+if command -q firefox-developer-edition
+    set -x BROWSER firefox-developer-edition
+else if command -q firefox
+    set -x BROWSER firefox
+end
+
 if command -q kitty
     set -x TERMINAL kitty
 else if command -q alacritty
     set -x TERMINAL alacritty
 end
-set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
-command -q nvim && set -gx EDITOR nvim
+
+command -q dotnet && set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
+
+# command -q nvim && set -gx EDITOR nvim
+command -q hx && set -gx EDITOR hx
 set -gx GEM_HOME "$HOME/.gem/ruby/3.0.0"
 
 # >:[
@@ -16,13 +27,22 @@ if command -q ansible && command -q cowsay
     set -gx ANSIBLE_NOCOWS 1
 end
 
+# If we're on arch and the file exists
+if command -q pacman && test -f /opt/asdf-vm/asdf.fish
+    source /opt/asdf-vm/asdf.fish
+end
+
+if command -q ros && test -d ~/.roswell/bin
+    fish_add_path "$HOME/.roswell/bin"
+end
+
 test -d "$HOME/Scripts" && fish_add_path "$HOME/Scripts"
 
-# pnpm
-set -gx PNPM_HOME "$HOME/.local/share/pnpm"
-fish_add_path "$PNPM_HOME"
-[ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
-# pnpm end
+if command -q pnpm
+    set -gx PNPM_HOME "$HOME/.local/share/pnpm"
+    fish_add_path "$PNPM_HOME"
+    [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
+end
 
 # Perl stuff
 if command -q perl
@@ -55,6 +75,10 @@ end
 
 # Nix stuff
 command -q nix && fish_add_path "$HOME/.nix-profile/bin"
+
+if test -d "$HOME/go/bin"
+    fish_add_path "$HOME/go/bin"
+end
 
 # If fish is not running interactively, end the script here
 if not status is-interactive
