@@ -1,7 +1,6 @@
 # Environment
 fish_add_path "$HOME/.local/bin"
 command -q bat && set -x PAGER 'bat'
-command -q nvim && set -x MANPAGER 'nvim +Man!'
 
 ## Browser
 if command -q firefox-developer-edition
@@ -89,6 +88,15 @@ end
 set -g fish_cursor_default block
 set -g fish_cursor_insert line
 set -g fish_cursor_replace_one underscore
+set -g fish_color_normal 00DDDD
+set -g fish_color_keyword C0C
+set -g fish_color_redirection FFA500
+set -g fish_color_error FF0000
+set -g fish_color_param 088
+set -g fish_color_valid_path DE3163
+set -g fish_color_option 00C000
+set -g fish_color_operator FFFF00
+set -g fish_color_autosuggestion 477
 
 # Aliasses and Abbreviations
 command -q docker-compose && abbr -ag dcc docker-compose
@@ -115,6 +123,17 @@ if command -q lsd
     abbr -ag la lsd -A
     abbr -ag lla lsd -lA
 end
+
+alias rm='rm -I'
+
+if command -q batman
+    abbr -ag man batman
+    set -x MANPAGER 'less'
+else
+    command -q nvim && set -x MANPAGER 'nvim +Man!'
+end
+
+command -q julia && abbr -ag jl julia
 
 alias nmcli='nmcli --color=auto --ask'
 alias wdiff="wdiff -n -w '"\033"[30;41m' -x '"\033"[0m' -y '"\033"[30;42m' -z '"\033"[0m'"
