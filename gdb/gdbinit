@@ -1,3 +1,6 @@
 source /usr/share/gdb-dashboard/.gdbinit
+
+dashboard -layout !assembly breakpoints expressions history memory !registers source stack threads variables
+
 set disassembly-flavor intel
 set debuginfod enabled on

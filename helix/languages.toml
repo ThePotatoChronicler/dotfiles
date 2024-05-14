@@ -1,0 +1,36 @@
+[language-server.esbonio]
+command = "esbonio"
+
+[language-server.astro-ls]
+command = "astro-ls"
+args = ["--stdio"]
+config = { typescript = { tsdk = "/usr/lib/node_modules/typescript/lib/" }}
+
+[language-server.asm-lsp]
+command = "asm-lsp"
+
+[language-server.cl-lsp]
+command = "cl-lsp"
+args = []
+
+[[language]]
+name = "rst"
+language-servers = ["esbonio"]
+
+[[language]]
+name = "astro"
+scope = "source.astro"
+roots = ["package.json"]
+language-servers = ["astro-ls"]
+
+[[language]]
+name = "nim"
+language-servers = [ "nimlsp" ]
+
+[[language]]
+name = "gas"
+language-servers = ["asm-lsp"]
+
+[[language]]
+name = "nasm"
+language-servers = ["asm-lsp"]

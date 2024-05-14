@@ -1,5 +1,14 @@
 function fish_prompt --description 'Rainbow prompt :)'
-    set -l HSL_TO_RGB "$__fish_config_dir/hsl_to_rgb/hsl_to_rgb"
+    set -f HSL_TO_RGB "$__fish_config_dir/hsl_to_rgb/hsl_to_rgb"
+
+    # Fallback for when hsl_to_rgb is not compiled yet
+    if not test -x "$HSL_TO_RGB"
+        printf "%s%s%s@%s%s%s\$ %s" \
+            (set_color brblue) "$USER" (set_color bryellow) \
+            (set_color brgreen) (prompt_hostname) \
+            (set_color -d green) (set_color normal)
+        return
+    end
 
     # Here so the other commands don't overwrite it
     set last_pipestatus $pipestatus
@@ -51,7 +60,7 @@ function fish_prompt --description 'Rainbow prompt :)'
 
     set -l datestring "[$(date +%T)]"
 
-   set -g __fish_git_prompt_color purple
+    set -g __fish_git_prompt_color purple
 
     # Prints the rest. kinda confusing with that large amount of formatting
     printf '%s] %s%s%s %s%s %s\f\r%s%s ' \

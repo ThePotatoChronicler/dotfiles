@@ -1,12 +1,16 @@
 # Environment
-fish_add_path "$HOME/.local/bin"
-command -q bat && set -x PAGER 'bat'
+fish_add_path -g "$HOME/.local/bin"
+command -q bat && set -x PAGER bat
 
 ## Browser
 if command -q firefox-developer-edition
     set -x BROWSER firefox-developer-edition
 else if command -q firefox
     set -x BROWSER firefox
+end
+
+if command -q chromium
+    set -x CHROME_EXECUTABLE chromium
 end
 
 if command -q kitty
@@ -18,7 +22,12 @@ end
 command -q dotnet && set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
 
 # command -q nvim && set -gx EDITOR nvim
-command -q hx && set -gx EDITOR hx
+if command -q hx
+    set -gx EDITOR hx
+else if command -q helix
+    set -gx EDITOR helix
+end
+
 set -gx GEM_HOME "$HOME/.gem/ruby/3.0.0"
 
 # >:[
@@ -32,14 +41,14 @@ if command -q pacman && test -f /opt/asdf-vm/asdf.fish
 end
 
 if command -q ros && test -d ~/.roswell/bin
-    fish_add_path "$HOME/.roswell/bin"
+    fish_add_path -g "$HOME/.roswell/bin"
 end
 
-test -d "$HOME/Scripts" && fish_add_path "$HOME/Scripts"
+test -d "$HOME/Scripts" && fish_add_path -g "$HOME/Scripts"
 
 if command -q pnpm
     set -gx PNPM_HOME "$HOME/.local/share/pnpm"
-    fish_add_path "$PNPM_HOME"
+    fish_add_path -g "$PNPM_HOME"
     [ -f ~/.config/tabtab/fish/__tabtab.fish ]; and . ~/.config/tabtab/fish/__tabtab.fish; or true
 end
 
@@ -55,28 +64,29 @@ end
 command -q opam && eval (opam env)
 
 # Rust (cargo) stuff
-command -q cargo && fish_add_path "$HOME/.cargo/bin"
+command -q cargo && fish_add_path -g "$HOME/.cargo/bin"
 
 # pyenv stuff
 if command -q pyenv
     set -gx PYENV_ROOT "$HOME/.pyenv"
-    fish_add_path "$PYENV_ROOT/bin"
+    fish_add_path -g "$PYENV_ROOT/bin"
     pyenv init - | source
 end
 
 # Ruby stuff
-command -q gem && fish_add_path "$HOME/.gem/ruby/3.0.0/bin"
+# TODO: Make this more system independent
+command -q gem && fish_add_path -g "$HOME/.gem/ruby/3.0.0/bin"
 
 # Nim stuff
 if command -q choosenim || command -q nim
-    fish_add_path "$HOME/.nimble/bin"
+    fish_add_path -g "$HOME/.nimble/bin"
 end
 
 # Nix stuff
-command -q nix && fish_add_path "$HOME/.nix-profile/bin"
+# command -q nix && fish_add_path -g "$HOME/.nix-profile/bin"
 
 if test -d "$HOME/go/bin"
-    fish_add_path "$HOME/go/bin"
+    fish_add_path -g "$HOME/go/bin"
 end
 
 # If fish is not running interactively, end the script here
@@ -126,9 +136,11 @@ end
 
 alias rm='rm -I'
 
+command -q bat && alias cat=bat
+
 if command -q batman
     abbr -ag man batman
-    set -x MANPAGER 'less'
+    set -x MANPAGER less
 else
     command -q nvim && set -x MANPAGER 'nvim +Man!'
 end
@@ -137,3 +149,22 @@ command -q julia && abbr -ag jl julia
 
 alias nmcli='nmcli --color=auto --ask'
 alias wdiff="wdiff -n -w '"\033"[30;41m' -x '"\033"[0m' -y '"\033"[30;42m' -z '"\033"[0m'"
+
+# if command -q atuin
+#     atuin init fish | source
+# end
+
+if command -q zoxide
+    zoxide init fish | source
+    abbr -ag cd z
+    abbr -ag cdi zi
+end
+
+function mkc
+    if test (count $argv) -gt 1
+        echo "mkc: Expected exactly one argument" >&2
+        return 1
+    end
+    set DIR $argv[1]
+    mkdir "$DIR" && cd "$DIR"
+end
