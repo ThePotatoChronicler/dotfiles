@@ -13,6 +13,14 @@ command = "asm-lsp"
 command = "cl-lsp"
 args = []
 
+[language-server.pyright]
+command = "pyright-langserver"
+args = ["--stdio"]
+
+[[language]]
+name = "python"
+language-servers = [ "pyright" ]
+
 [[language]]
 name = "rst"
 language-servers = ["esbonio"]
@@ -24,13 +32,51 @@ roots = ["package.json"]
 language-servers = ["astro-ls"]
 
 [[language]]
-name = "nim"
-language-servers = [ "nimlsp" ]
-
-[[language]]
 name = "gas"
 language-servers = ["asm-lsp"]
 
 [[language]]
 name = "nasm"
 language-servers = ["asm-lsp"]
+
+[language-server.jinja-lsp]
+command = "jinja-lsp"
+config = { templates = "./templates", backend = ["./src"], lang = "rust"}
+timeout = 5
+
+[[language]]
+name = "jinja"
+language-servers = ["jinja-lsp"]
+
+[language-server.pylsp.config]
+pylsp.plugins.rope_autoimport.enabled = true
+pylsp.plugins.rope_autoimport.memory = true
+# pylsp.plugins.pylint.enabled = true
+
+
+[language-server.ltex-ls]
+command = "ltex-ls"
+
+[[language]]
+name = "git-commit"
+language-servers = ["ltex-ls"]
+
+[[language]]
+name = "html"
+language-servers = [ "vscode-html-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "css"
+language-servers = [ "vscode-css-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "jsx"
+language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "tsx"
+language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
+
+[[language]]
+name = "svelte"
+language-servers = [ "svelteserver", "tailwindcss-ls" ]
