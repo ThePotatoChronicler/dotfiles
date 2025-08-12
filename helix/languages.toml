@@ -17,6 +17,9 @@ args = []
 command = "pyright-langserver"
 args = ["--stdio"]
 
+[language-server.laravel-ls]
+command = "laravel-ls"
+
 [[language]]
 name = "python"
 language-servers = [ "pyright" ]
@@ -29,7 +32,7 @@ language-servers = ["esbonio"]
 name = "astro"
 scope = "source.astro"
 roots = ["package.json"]
-language-servers = ["astro-ls"]
+language-servers = ["astro-ls", "tailwindcss-ls"]
 
 [[language]]
 name = "gas"
@@ -80,3 +83,19 @@ language-servers = [ "typescript-language-server", "tailwindcss-ls" ]
 [[language]]
 name = "svelte"
 language-servers = [ "svelteserver", "tailwindcss-ls" ]
+
+[[language]]
+name = "php"
+language-servers = [ "intelephense", "laravel-ls" ]
+
+[[language]]
+name = "blade"
+indent = { tab-width = 2, unit = "  " }
+language-servers = [ "intelephense", "laravel-ls", "tailwindcss-ls" ]
+
+[language-server.prisma-language-server.config.prisma]
+enableDiagnostics = true
+
+[[language]]
+name = "toml"
+roots = ["."]

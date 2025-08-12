@@ -20,11 +20,10 @@ else if command -q alacritty
 end
 
 command -q dotnet && set -gx DOTNET_CLI_TELEMETRY_OPTOUT 1
+command -q pwsh && set -gx POWERSHELL_TELEMETRY_OPTOUT 1
 
 # command -q nvim && set -gx EDITOR nvim
-if command -q hx
-    set -gx EDITOR hx
-else if command -q helix
+if command -q helix
     set -gx EDITOR helix
 end
 
@@ -102,6 +101,11 @@ if test -d "$HOME/go/bin"
     fish_add_path -g "$HOME/go/bin"
 end
 
+# PHP stuff
+if command -q composer
+    fish_add_path -g "$HOME/.config/composer/vendor/bin"
+end
+
 # If fish is not running interactively, end the script here
 if not status is-interactive
     exit
@@ -112,6 +116,7 @@ set -g fish_cursor_default block
 set -g fish_cursor_insert line
 set -g fish_cursor_replace_one underscore
 set -g fish_color_normal 00DDDD
+set -g fish_color_command 26F7FD
 set -g fish_color_keyword C0C
 set -g fish_color_redirection FFA500
 set -g fish_color_error FF0000
@@ -174,4 +179,9 @@ function mkc
     end
     set DIR $argv[1]
     mkdir "$DIR" && cd "$DIR"
+end
+
+if command -q starship
+    starship init fish | source
+    enable_transience
 end
