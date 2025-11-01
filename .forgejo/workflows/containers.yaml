@@ -1,0 +1,42 @@
+on:
+  push:
+
+jobs:
+  build:
+    runs-on:
+      - self_hosted-amd64-docker
+    # NOTE: Temporary solution, just for bootstrapping
+    container: codeberg.org/potatochronicler/dotfiles/bootstrap/podman-node:v5.6
+    steps:
+      - uses: https://code.forgejo.org/actions/checkout@v5
+      - name: Build base image
+        id: build-image
+        run: |
+          set -x
+          IFS=$'\n\t'
+          BUILT_IMAGE=$(podman build -f containers/base/Containerfile . | tail -n 1) 
+          echo "image=$BUILT_IMAGE" >> $FORGEJO_OUTPUT
+      - name: Check if OCI_REGISTRY is defined
+        run: |
+          if [[ "${{ vars.OCI_REGISTRY }}" = "" ]]; then
+            echo OCI Registry is undefined!
+            exit 1
+          fi
+      - name: Login to OCI registry
+        run: |
+          set +x
+          printf "%s" "${{ secrets.OCI_REGISTRY_PASSWORD }}" | \
+            podman login --username "${{ secrets.OCI_REGISTRY_USERNAME }}" --password-stdin "${{ vars.OCI_REGISTRY }}"
+      - name: Push date-versioned image to registry
+        run: |
+          set -x
+          podman push \
+            "${{ steps.build-image.outputs.image }}" \
+            "docker://${{ vars.OCI_REGISTRY }}/dotfiles/containers/base:$(date "+%Y-%m-%d")"
+      - name: Push latest image to registry
+        if: forgejo.ref == 'refs/heads/main'
+        run: |
+          set -x
+          podman push \
+            "${{ steps.build-image.outputs.image }}" \
+            "docker://${{ vars.OCI_REGISTRY }}/dotfiles/containers/base:latest"
