@@ -1,33 +1,43 @@
-FROM debian:unstable-20251020 as install-base
+ARG BASE_IMAGE=docker.io/library/archlinux:base-20251019.0.436919
 
-# https://stackoverflow.com/a/72851168
+FROM $BASE_IMAGE as mirror-base
+
+RUN \
+  echo 'Server = https://archive.archlinux.org/repos/2025/11/02/$repo/os/$arch' \
+    > /etc/pacman.d/mirrorlist
+
+RUN \
+  --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
+  --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
+  yes | pacman -Sy
+    
+FROM mirror-base as install-base
+
 RUN \
   --mount=type=bind,src=containers/base/packagelist,dst=/packagelist \
-  --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
-  --mount=target=/var/cache/apt,type=cache,sharing=locked \
-  rm -f /etc/apt/apt.conf.d/docker-clean && \
-  apt-get update && \
-  xargs apt-get -y --no-install-recommends install < /packagelist
+  --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
+  --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
+  yes | pacman --needed -Syu $(< /packagelist)
 
 RUN \
-  passwd -d root && \
+  echo root | passwd -s root && \
   useradd -u 1000 -m -s /usr/bin/fish boxuser
 
 # <helix-grammar-build>
-FROM install-base as helix-grammar-build
+FROM mirror-base as helix-grammar-build
 
 # We replicate this so that we don't depend on packagelist
 RUN \
-  --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
-  --mount=target=/var/cache/apt,type=cache,sharing=locked \
-  rm -f /etc/apt/apt.conf.d/docker-clean && \
-  apt-get update && \
-  apt-get -y --no-install-recommends install git gcc g++ ca-certificates hx
+  --mount=type=bind,src=containers/base/packagelist,dst=/packagelist \
+  --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
+  --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
+  yes | pacman --needed -Syu git gcc helix
 
 USER 1000:1000
 WORKDIR /home/boxuser
+ENV HOME=/home/boxuser
 
-RUN hx --grammar fetch && hx --grammar build
+RUN helix --grammar fetch && helix --grammar build
 # </helix-grammar-build>
 
 
@@ -41,13 +51,6 @@ COPY --from=helix-grammar-build /home/boxuser/.config/helix/runtime/grammars .co
 COPY --chown=1000:1000 fish .config/fish
 COPY --chown=1000:1000 starship.toml .config/
 COPY --chown=1000:1000 helix .config/helix
-
-# Sometimes it's hx, sometimes it's helix
-RUN \
-  printf "%s\n" \
-    "function get-helix-editor-name; echo hx; end" \
-    > .config/fish/functions/get-helix-editor-name.fish
-    
 
 ENTRYPOINT ["/usr/bin/fish"]
 

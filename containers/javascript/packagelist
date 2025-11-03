@@ -1,0 +1,10 @@
+nodejs
+pnpm
+vscode-css-languageserver
+vscode-html-languageserver
+vscode-json-languageserver
+svelte-language-server
+tailwindcss-language-server
+gcc
+make
+python

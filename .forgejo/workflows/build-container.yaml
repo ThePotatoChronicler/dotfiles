@@ -1,5 +1,10 @@
 on:
-  push:
+  workflow_call:
+    inputs:
+      container-file:
+        type: string
+      container-name:
+        type: string
 
 jobs:
   build:
@@ -14,7 +19,7 @@ jobs:
         run: |
           set -x
           IFS=$'\n\t'
-          BUILT_IMAGE=$(podman build -f containers/base/Containerfile . | tail -n 1) 
+          BUILT_IMAGE=$(podman build -f "${{ inputs.container-file }}" . | tail -n 1) 
           echo "image=$BUILT_IMAGE" >> $FORGEJO_OUTPUT
       - name: Check if OCI_REGISTRY is defined
         run: |
@@ -32,11 +37,11 @@ jobs:
           set -x
           podman push \
             "${{ steps.build-image.outputs.image }}" \
-            "docker://${{ vars.OCI_REGISTRY }}/dotfiles/containers/base:$(date "+%Y-%m-%d")"
+            "docker://${{ vars.OCI_REGISTRY }}/dotfiles/containers/${{ inputs.container-name }}:$(date "+%Y-%m-%d")"
       - name: Push latest image to registry
         if: forgejo.ref == 'refs/heads/main'
         run: |
           set -x
           podman push \
             "${{ steps.build-image.outputs.image }}" \
-            "docker://${{ vars.OCI_REGISTRY }}/dotfiles/containers/base:latest"
+            "docker://${{ vars.OCI_REGISTRY }}/dotfiles/containers/${{ inputs.container-name }}:latest"

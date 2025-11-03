@@ -1,0 +1,17 @@
+on:
+  push:
+    paths:
+      - containers/javascript
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      - ./.forgejo/workflows/container-base.yaml
+
+jobs:
+  build-base:
+    uses: ./.forgejo/workflows/build-container.yaml
+    with:
+      container-file: containers/javascript/Containerfile
+      container-name: javascript
+    secrets: inherit

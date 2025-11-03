@@ -1,0 +1,12 @@
+on:
+  push:
+    paths:
+      - containers/base
+
+jobs:
+  build-base:
+    uses: ./.forgejo/workflows/build-container.yaml
+    with:
+      container-file: containers/base/Containerfile
+      container-name: base
+    secrets: inherit

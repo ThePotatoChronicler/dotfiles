@@ -1,7 +1,7 @@
-hx
+helix
 fish
 starship
 kitty-terminfo
 git
-openssl
-ca-certificates
+fd
+ripgrep
