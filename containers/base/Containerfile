@@ -46,7 +46,7 @@ FROM install-base
 USER 1000:1000
 WORKDIR /home/boxuser
 
-COPY --from=helix-grammar-build /home/boxuser/.config/helix/runtime/grammars .config/helix/runtime/grammars
+COPY --chown=1000:1000 --from=helix-grammar-build /home/boxuser/.config/helix/runtime/grammars .config/helix/runtime/grammars
 
 COPY --chown=1000:1000 fish .config/fish
 COPY --chown=1000:1000 starship.toml .config/
