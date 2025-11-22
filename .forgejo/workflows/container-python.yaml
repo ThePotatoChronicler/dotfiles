@@ -1,0 +1,17 @@
+on:
+  push:
+    paths:
+      - containers/python
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      - ./.forgejo/workflows/container-base.yaml
+
+jobs:
+  build-base:
+    uses: ./.forgejo/workflows/build-container.yaml
+    with:
+      container-file: containers/python/Containerfile
+      container-name: python
+    secrets: inherit

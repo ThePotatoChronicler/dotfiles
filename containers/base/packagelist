@@ -1,9 +1,13 @@
 helix
-fish
+nushell
 starship
 kitty-terminfo
 git
 fd
 ripgrep
 lsd
-which
+podman
+docker-compose
+crun
+bat
+bat-extras

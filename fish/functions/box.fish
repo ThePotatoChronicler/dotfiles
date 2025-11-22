@@ -1,11 +1,18 @@
+function _box_create_pinp_container
+
+end
+
 function box --wraps "podman run" \
     --description "Runs boxed environments"
+
+    set -l podman_image quay.io/podman/stable:v5.6
 
     argparse --move-unknown --min-args 1 --max-args 1 -S \
         "/variant=&" \
         /name= \
         "/mount-cwd&" \
         "/no-create&" \
+        "/no-podman&" \
         -- $argv
     or return
 
@@ -30,12 +37,20 @@ function box --wraps "podman run" \
             case exited
                 podman container start -ia -- $container_name
             case running
-                podman container attach -- $container_name
+                podman container exec -ti -- $container_name /proc/1/exe
         end
     else
         if set -q _flag_no_create
             echo "This container doesn't exist, and you've forbidden creating new ones"
             return 1
+        end
+
+        set -l pinp_container
+
+        if not set -q _flag_no_podman
+            set pinp_container _box_create_pinp_container
+
+            set pinp_container ()
         end
 
         podman run \
@@ -47,8 +62,12 @@ function box --wraps "podman run" \
                 && printf "%s\n" "--mount=type=bind,src=.,dst=/mnt/cwd" "--workdir=/mnt/cwd") \
             (set -q _flag_mount_cwd \
                 && printf "%s\n" "--userns=keep-id:uid=1000,gid=1000") \
+            (not set -q _flag_no_podman \
+                && printf "%s\n" "--requires=$pinp_container") \
             $argv_opts \
             -- \
             "codeberg.org/potatochronicler/dotfiles/containers/$variant:latest"
     end
 end
+
+functions -e _box_create_pinp_container

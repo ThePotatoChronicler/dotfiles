@@ -3,13 +3,9 @@ FROM codeberg.org/potatochronicler/dotfiles/containers/base:latest
 USER 0:0
 
 RUN \
-  --mount=type=bind,src=containers/javascript/packagelist,dst=/packagelist \
+  --mount=type=bind,src=containers/python/packagelist,dst=/packagelist \
   --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
   --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
   pacman --needed --noconfirm -Syu $(< /packagelist)
 
 USER 1000:1000
-
-RUN \
-  --mount=type=bind,src=containers/javascript/npm_packagelist,dst=/npm_packagelist \
-  xargs -r pnpm -g install < /npm_packagelist

@@ -9,7 +9,7 @@ RUN \
 RUN \
   --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
   --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
-  yes | pacman -Sy
+  pacman --needed --noconfirm -Sy
     
 FROM mirror-base as install-base
 
@@ -17,7 +17,7 @@ RUN \
   --mount=type=bind,src=containers/base/packagelist,dst=/packagelist \
   --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
   --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
-  yes | pacman --needed -Syu $(< /packagelist)
+  pacman --needed --noconfirm -Syu  $(< /packagelist)
 
 RUN \
   echo root | passwd -s root && \
@@ -31,7 +31,7 @@ RUN \
   --mount=type=bind,src=containers/base/packagelist,dst=/packagelist \
   --mount=target=/var/lib/pacman/sync,type=cache,sharing=locked \
   --mount=target=/var/cache/pacman/pkg,type=cache,sharing=locked \
-  yes | pacman --needed -Syu git gcc helix
+  pacman --needed --noconfirm -Syu git gcc helix
 
 USER 1000:1000
 WORKDIR /home/boxuser
@@ -48,10 +48,8 @@ WORKDIR /home/boxuser
 
 COPY --chown=1000:1000 --from=helix-grammar-build /home/boxuser/.config/helix/runtime/grammars .config/helix/runtime/grammars
 
-COPY --chown=1000:1000 fish .config/fish
+COPY --chown=1000:1000 nushell .config/nushell
 COPY --chown=1000:1000 starship.toml .config/
 COPY --chown=1000:1000 helix .config/helix
 
-ENTRYPOINT ["/usr/bin/fish"]
-
-
+ENTRYPOINT ["/usr/bin/nu"]
