@@ -1,9 +1,35 @@
+const podman_image = "quay.io/podman/stable:v5.6"
+
 def "nu-complete box variants" [] {
   [
     { value: "base", style: { fg: cyan } }
     { value: "javascript", style: { fg: yellow } }
     { value: "python", style: { fg: blue } }
   ]
+}
+
+def run-pinp-container [
+  opts: record<pinp_volume: string>
+]: nothing -> string {
+  (
+    podman run
+      -d
+      --user podman
+      $"--mount=type=volume,src=($opts.pinp_volume),dst=/mnt/pinp"
+      --device /dev/fuse
+      --device /dev/net/tun
+      --security-opt unmask=/proc/sys
+      --
+      $podman_image
+      podman system service -t0 unix:///mnt/pinp/podman.sock
+  ) | complete
+    | if $in.exit_code == 0 {
+      $in.stdout
+    } else {
+      error make {
+        msg: $"Failed to create PINP container: \"($in.stderr)\""
+      }
+    }
 }
 
 # Runs boxed environments
@@ -41,8 +67,12 @@ export def main [
         return 1
       }
 
-      let pinp_constainer = if not $no_podman {
-        # Create PINP container
+      let pinp_volume = if not $no_podman {
+        podman volume create --opt device=tmpfs --opt type=tmpfs --opt o=uid=1000,gid=1000
+      }
+
+      let pinp_container = if not $no_podman {
+        run-pinp-container { pinp_volume: $pinp_volume }
       }
 
       (
@@ -54,9 +84,17 @@ export def main [
           ...(if $mount_cwd {[--mount=type=bind,src=.,dst=/mnt/cwd --workdir=/mnt/cwd]})
           ...(if $mount_cwd {[--userns=keep-id:uid=1000,gid=1000]})
           ...(if $rm {[--rm]})
-          # ...(if (not $no_podman) {[$"--requires=($pinp_container)"]})
+          ...(if (not $no_podman) {[
+            --requires=($pinp_container)
+            $"--mount=type=volume,src=($pinp_volume),dst=/mnt/pinp"
+            --env CONTAINER_HOST=unix:///mnt/pinp/podman.sock
+          ]})
           --
           $"codeberg.org/potatochronicler/dotfiles/containers/($variant):latest"
       )
+
+      if not $no_podman {
+        podman stop $pinp_container
+      }
   }
 }
