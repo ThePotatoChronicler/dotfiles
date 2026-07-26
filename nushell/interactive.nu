@@ -16,32 +16,6 @@ export def cat [...files: string] {
   ^(pick_external bat | default cat) ...$files
 }
 
-def sudo_completer [spans: list<string>]: nothing -> any {
-  $spans | to json | each {|e| $e + "\n"} | save --append /tmp/log.txt
-  match ($spans | skip 1) {
-    [$command] => {
-      $command | commandline complete -d | select value? description? style?
-    },
-    [$command, ..$rest] => {
-      [$command, ...$rest] | str join " " | collect | commandline complete -d | select value? description? style?
-    }
-  }
-}
-
-@complete sudo_completer
-export def sudo --wrapped [
-  command: string
-  ...params: string
-  ] {
-  let cmd = if (not (defined_external sudo) and (defined_external doas)) {
-    "doas"
-  } else {
-    "sudo"
-  }
-
-  ^$cmd -- $command ...$params
-}
-
 export def btop [] {
   ^bwrap --ro-bind / / --bind ($env.HOME)/.config/btop ($env.HOME)/.config/btop -- btop
 }
