@@ -1,6 +1,6 @@
-const podman_image = "quay.io/podman/stable:v5.6"
+const podman_image = "quay.io/podman/stable:v5.8"
 
-def "nu-complete box variants" [] {
+def box_variants [] {
   [
     { value: "base", style: { fg: cyan } }
     { value: "javascript", style: { fg: yellow } }
@@ -34,7 +34,7 @@ def run-pinp-container [
 
 # Runs boxed environments
 export def main [
-  --variant: string@"nu-complete box variants" = "base" # Image variant
+  --variant: string@"box_variants" = "base" # Image variant
   --mount-cwd # Mounts current working directory
   --no-create # Forbids creation of new boxes
   --no-podman # Do not connect a podman runner
@@ -45,10 +45,12 @@ export def main [
 
   let container_name = $"box_($box_name)"
 
-  let container_exists = ^podman container exists -- $container_name
+  let container_exists = (
+    ^podman container exists -- $container_name
     | complete
     | get exit_code
     | $in == 0
+  )
 
   if $container_exists {
     let container_status = (podman container inspect --format="{{ .State.Status }}" $container_name)
@@ -81,8 +83,11 @@ export def main [
           --env TERM
           --env COLORTERM
           --name $container_name
-          ...(if $mount_cwd {[--mount=type=bind,src=.,dst=/mnt/cwd --workdir=/mnt/cwd]})
-          ...(if $mount_cwd {[--userns=keep-id:uid=1000,gid=1000]})
+          ...(if $mount_cwd {[
+            "--mount=type=bind,src=.,dst=/mnt/cwd"
+            "--workdir=/mnt/cwd"
+            "--userns=keep-id:uid=1000,gid=1000"            
+          ]})
           ...(if $rm {[--rm]})
           ...(if (not $no_podman) {[
             --requires=($pinp_container)

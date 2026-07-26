@@ -25,36 +25,11 @@ if (defined helix) {
 
 if (defined carapace) {
   $env.CARAPACE_BRIDGES = 'zsh,fish,bash,inshellisense' # optional
-  carapace _carapace nushell | save --force $"($nu.temp-path)/($nu.pid)-carapace.nu"
-}
-
-if (defined starship) {
-  starship init nu | save -f $"($nu.temp-path)/($nu.pid)-starship.nu"
-}
-
-do --env {
-  mut out = ""
-
-  if (defined batman) {
-    $out += "alias man = batman\n"
-  }
-
-  if (defined bat) {
-    $out += "alias cat = bat\n"
-  }
-
-  if (not (defined sudo) and (defined doas)) {
-    $out += "alias sudo = doas\n"
-  }
-
-  if ("EDITOR" in $env) {
-    $out += $"alias e = ($env.EDITOR)\n"
-  }
-
-  if ($out != "") {
-    $out | save -f $"($nu.temp-path)/($nu.pid)-dynamic_aliases.nu"
+  $env.config.completions.external = {
+    enable: true,
+    max_results: 10000,
+    completer: {|spans| carapace $spans.0 nushell ...$spans | from json}
   }
 }
 
-# Hide unnecessary things
 hide defined
