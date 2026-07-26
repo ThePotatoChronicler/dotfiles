@@ -25,11 +25,8 @@ def is_protected_dir [filename: string]: nothing -> bool {
 
 def clipboard_opts []: nothing -> oneof<list<any>, nothing> {
   if (defined_external wl-copy) and ([ XDG_RUNTIME_DIR WAYLAND_DISPLAY ] | all {|k| $k in $env}) {
-    mkdir /tmp/editor-tmp
     [
       --bind-try ($env.XDG_RUNTIME_DIR)/($env.WAYLAND_DISPLAY) ($env.XDG_RUNTIME_DIR)/($env.WAYLAND_DISPLAY)
-      --bind /tmp/editor-tmp /.editor-tmp
-      --setenv TMPDIR /.editor-tmp
     ]
   }
 }
@@ -51,11 +48,17 @@ def symlink_opts [filename: oneof<string, nothing>, can_bind_all: bool]: nothing
 }
 
 # FIXME: If files inside the directory, other than the file specified as filename, are symlinks, they won't be resolved
-export def e [
-  --can-bind-all = false
-  --override-executable: string
-  filename?: string
-] {
+export def r [
+  --can-bind-all
+  --edit-file: string   # Says that the executable is an editor, about to edit this file
+  --internet (-i)
+  --args: list<string> 
+  executable: string = "nu"
+]: nothing -> any {
+  const config_dirs = [ helix fish nushell ]
+
+  let filename = $edit_file
+
   let directory: string = (
     ( extract_project_directory ($filename | default { pwd }) )
     | default { $filename | path dirname }
@@ -74,11 +77,15 @@ export def e [
 
   let rustup_path: oneof<string, nothing> = which rustup | get 0?.path
 
-  let container_bin = "/.container_bin"
+  const container_bin = "/.container_bin"
 
   (
     ^bwrap
-      --unshare-net
+      ...(
+        if not $internet {
+          [--unshare-net]
+        }
+      )
       --unshare-ipc
       --unshare-pid
       --unshare-cgroup-try
@@ -89,15 +96,31 @@ export def e [
       --ro-bind-try /bin /bin
       --ro-bind-try /sbin /sbin
       --ro-bind-try /lib64 /lib64
+      --ro-bind-try /etc /etc
+
+      --tmpfs /.tmp
+      --setenv TMPDIR /.tmp
+      --setenv TMP /.tmp
+
+      # Configs
+      ...(
+        $config_dirs | each -f {|$d| [
+          --ro-bind-try ($env.HOME)/.config/($d) ($env.HOME)/.config/($d)
+        ]}
+      )
+
+      ...(
+        if $executable == "nu" {
+          ^mkdir -p --mode=0700 /tmp/editor-tmp
+          touch /tmp/editor-tmp/nushell_history.txt
+          [--bind /tmp/editor-tmp/nushell_history.txt ($env.HOME)/.config/nushell/history.txt]
+        }
+      )
 
       # Adding a writable directory to path, so we can override commands
       --size (1MiB | into int | into string) --tmpfs $container_bin
 
-      --setenv PATH ($env.PATH | prepend /.container_bin | str join :)
-
-      # Helix editor config
-      --ro-bind-try ($env.HOME)/.config/helix/config.toml ($env.HOME)/.config/helix/config.toml
-      --ro-bind-try ($env.HOME)/.config/helix/languages.toml ($env.HOME)/.config/helix/languages.toml
+      --setenv PATH ($env.PATH | prepend /.container_bin | str join ":")
 
       # Rustup
       --ro-bind-try $rustup_dir $rustup_dir
@@ -119,7 +142,7 @@ export def e [
 
       --bind $source $target
       --
-      (if $override_executable != null { $override_executable } else $env.EDITOR)
-      ...([$filename] | compact)
+      $executable
+      ...$args
   )
 }

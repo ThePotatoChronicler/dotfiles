@@ -14,4 +14,12 @@ export def btop [] {
 
 export alias rm = rm -I
 
-export use ./editor.nu *
+export use ./runboxed.nu *
+
+export def e [
+  --can-bind-all
+  --internet (-i)
+  filename: string
+]: nothing -> any {
+  r --can-bind-all=$can_bind_all --internet=$internet --edit-file $filename --args [$filename] $env.EDITOR
+}
