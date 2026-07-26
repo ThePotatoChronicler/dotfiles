@@ -60,11 +60,16 @@ def extract_project_directory [filename: string]: nothing -> oneof<string, nothi
     }
   }
 
-  if ($filename | path type) == "dir" {
+  if ($filename | path type) == dir {
     return $filename
   }
 }
 
+def is_protected_dir [filename: string]: nothing -> bool {
+  [$env.HOME / /home] | any {|e| $e == $filename}
+}
+
+# FIXME: If files inside the directory, other than the file specified as filename, are symlinks, they won't be resolved
 export def e [
   --can-bind-all = false
   filename?: string
@@ -75,10 +80,11 @@ export def e [
   )
 
   let source = $directory | path expand
+  let target = $directory | path expand -n
 
-  # print $"Directory: '($directory)', Source: '$($source)'"
+  # print $"Directory: '($directory)', Source: '($source)' Target: '($target)'"
 
-  if not $can_bind_all and ([$env.HOME / /home] | any {|e| $e == $source}) {
+  if not $can_bind_all and (is_protected_dir $source) {
     error make "Binding to $HOME, /home, or / allows the editor to access all your files. To proceed regardless, use --can-bind-all"
   }
 
@@ -110,7 +116,23 @@ export def e [
         }
       )
 
-      --bind $source ($directory | path expand -n)
+      ...(
+        if $filename != null and ($filename | path type) == symlink {
+          # Using path expand here will expand too much,
+          # we only need first layer, so we use readlink
+          let dir = readlink --  $filename | path dirname
+
+          if not $can_bind_all and (is_protected_dir $dir) {
+            error make "Binding to $HOME, /home, or / allows the editor to access all your files. To proceed regardless, use --can-bind-all"
+          }
+
+          print $"Binding symlink target dir: '($dir)'"
+          
+          [--bind $dir $dir]
+        }
+      )
+
+      --bind $source $target
       --
       $env.EDITOR ...([$filename] | compact)
   )
