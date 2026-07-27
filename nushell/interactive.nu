@@ -14,7 +14,9 @@ export def btop [] {
 
 export alias rm = rm -I
 
-export use ./runboxed.nu *
+use ./runboxed.nu
+
+export alias r = runboxed
 
 export def e [
   --can-bind-all
@@ -24,12 +26,13 @@ export def e [
   filename?: string
 ]: nothing -> any {
   (
-    r
+    runboxed
       --can-bind-all=$can_bind_all
       --internet=$internet
       --dbus=$dbus
       --gpu=$gpu
       --edit-file=$filename
+      --setsid
       --args=([$filename] | compact)
       $env.EDITOR
   )

@@ -90,13 +90,14 @@ def gpu_opts []: nothing -> oneof<list<any>, nothing> {
 }
 
 # FIXME: If files inside the directory, other than the file specified as filename, are symlinks, they won't be resolved
-export def r [
+export def main [
   --can-bind-all
   --edit-file: string   # Says that the executable is an editor, about to edit this file
   --internet (-i)
   --dbus
   --gpu
   --gui
+  --setsid
   --args: list<string> 
   executable: string = "nu"
 ]: nothing -> any {
@@ -142,6 +143,9 @@ export def r [
       --ro-bind-try /sbin /sbin
       --ro-bind-try /lib64 /lib64
       --ro-bind-try /etc /etc
+      ...(if $setsid {[--new-session]})
+
+      --setenv _POTATO_RUNBOXED 1
 
       --dir /tmp
       --tmpfs /.tmp
