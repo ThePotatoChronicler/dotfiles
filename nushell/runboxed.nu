@@ -125,6 +125,14 @@ export def main [
 
   const container_bin = "/.container_bin"
 
+  let cachedir = [ $env.HOME .cache/potato_runboxed ] | path join
+
+  let cargo_cache_dir = ($cachedir)/cargo
+  let pnpm_cache_dir = ($cachedir)/pnpm
+  let helix_cache_dir = ($cachedir)/helix
+
+  mkdir $cargo_cache_dir $pnpm_cache_dir $helix_cache_dir
+
   (
     ^bwrap
       ...(
@@ -152,8 +160,15 @@ export def main [
       --setenv TMPDIR /.tmp
       --setenv TMP /.tmp
 
-      --bind-try ($env.HOME)/.cargo ($env.HOME)/.cargo
-      --bind-try ($env.HOME)/.cache/helix ($env.HOME)/.cache/helix
+      --bind $cargo_cache_dir ($env.HOME)/.cargo
+      --bind $helix_cache_dir ($env.HOME)/.cache/helix
+      --bind $pnpm_cache_dir ($env.HOME)/.local/share/pnpm/store
+
+      # `pnpm` sees the store as being on a different filesystem, but in reality, it's not
+      # (atleast on my system, it's not, if it's on yours, change this,
+      # or maybe I'll make it customizable when it becomes an issue for me)
+      # so this way, we force it to believe!
+      --setenv PNPM_HOME ($env.HOME)/.local/share/pnpm
 
       # Configs
       ...(
