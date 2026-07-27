@@ -31,6 +31,24 @@ def clipboard_opts []: nothing -> oneof<list<any>, nothing> {
   }
 }
 
+def dbus_opts []: nothing -> oneof<list<any>, nothing> {
+  let dbus_address = $env.DBUS_SESSION_BUS_ADDRESS?
+
+  if ($dbus_address == null) {
+    return
+  }
+
+  let dbus_address = $dbus_address | parse "unix:path={path}" | get 0?.path?
+
+  if ($dbus_address == null) {
+    return
+  }
+
+  [
+    --bind $dbus_address $dbus_address
+  ]
+}
+
 def symlink_opts [filename: oneof<string, nothing>, can_bind_all: bool]: nothing -> oneof<list<any>, nothing> {
   if $filename != null and ($filename | path type) == symlink {
     # Using path expand here will expand too much,
@@ -47,11 +65,38 @@ def symlink_opts [filename: oneof<string, nothing>, can_bind_all: bool]: nothing
   }
 }
 
+def gpu_opts []: nothing -> oneof<list<any>, nothing> {
+  [
+    --ro-bind-try /sys/bus/pci /sys/bus/pci
+    --ro-bind-try /sys/devices/system/memory/block_size_bytes /sys/devices/system/memory/block_size_bytes
+    --ro-bind-try /sys/module/nvidia /sys/module/nvidia
+    --dev-bind-try /dev/dri /dev/dri
+    --dev-bind-try /dev/nvidiactl /dev/nvidiactl
+    --dev-bind-try /dev/nvidia0 /dev/nvidia0
+    ...(
+      %ls /dev/dri
+      | where type == "char device"
+      | get name
+      | each -f {|e|
+        let nums = ^stat -c '%Hr %Lr' $e | parse '{major} {minor}' | get 0
+        let sys_device = $"/sys/dev/char/($nums.major):($nums.minor)/device"
+
+        [
+          --ro-bind-try $sys_device $sys_device
+        ]
+      }
+    )
+  ]
+}
+
 # FIXME: If files inside the directory, other than the file specified as filename, are symlinks, they won't be resolved
 export def r [
   --can-bind-all
   --edit-file: string   # Says that the executable is an editor, about to edit this file
   --internet (-i)
+  --dbus
+  --gpu
+  --gui
   --args: list<string> 
   executable: string = "nu"
 ]: nothing -> any {
@@ -98,9 +143,13 @@ export def r [
       --ro-bind-try /lib64 /lib64
       --ro-bind-try /etc /etc
 
+      --dir /tmp
       --tmpfs /.tmp
       --setenv TMPDIR /.tmp
       --setenv TMP /.tmp
+
+      --bind-try ($env.HOME)/.cargo ($env.HOME)/.cargo
+      --bind-try ($env.HOME)/.cache/helix ($env.HOME)/.cache/helix
 
       # Configs
       ...(
@@ -136,6 +185,39 @@ export def r [
 
       # Clipboard functionality
       ...(clipboard_opts)
+
+      ...(if $dbus {
+        dbus_opts
+      })
+
+      ...(if $gpu {
+          gpu_opts
+      })
+
+      ...(
+        if $gui {
+          [
+            --bind-try ($env.HOME)/.cache/fontconfig ($env.HOME)/.cache/fontconfig
+            --bind-try ($env.HOME)/.cache/glycin ($env.HOME)/.cache/glycin
+            --ro-bind-try ($env.HOME)/.config/vulkan ($env.HOME)/.config/vulkan
+            --ro-bind-try ($env.HOME)/.config/dconf ($env.HOME)/.config/dconf
+            --ro-bind-try ($env.HOME)/.config/kdedefaults ($env.HOME)/.config/kdedefaults
+            --ro-bind-try ($env.HOME)/.config/gtk-3.0 ($env.HOME)/.config/gtk-3.0
+            --ro-bind-try ($env.HOME)/.local/share/vulkan ($env.HOME)/.local/share/vulkan
+            --ro-bind-try ($env.HOME)/.local/share/glib-2.0 ($env.HOME)/.local/share/glib-2.0
+            --ro-bind-try ($env.HOME)/.local/share/themes ($env.HOME)/.local/share/themes
+            --ro-bind-try ($env.HOME)/.local/share/gvfs-metadata ($env.HOME)/.local/share/gvfs-metadata
+            --ro-bind-try ($env.HOME)/.fontconfig ($env.HOME)/.fontconfig
+            --ro-bind-try ($env.HOME)/.fonts ($env.HOME)/.fonts
+            --ro-bind-try ($env.HOME)/.local/share/icons ($env.HOME)/.local/share/icons
+            --ro-bind-try ($env.HOME)/.icons ($env.HOME)/.icons
+            --ro-bind-try ($env.HOME)/.cursors ($env.HOME)/.cursors
+            --ro-bind-try ($env.HOME)/.themes ($env.HOME)/.themes
+            --ro-bind-try /var/cache/fontconfig /var/cache/fontconfig
+            --bind-try ($env.XDG_RUNTIME_DIR)/at-spi ($env.XDG_RUNTIME_DIR)/at-spi
+          ]
+        }
+      )
 
       # Resolving symlinks, if we're editing a symlink file
       ...(symlink_opts $filename $can_bind_all)

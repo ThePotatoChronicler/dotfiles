@@ -19,7 +19,18 @@ export use ./runboxed.nu *
 export def e [
   --can-bind-all
   --internet (-i)
-  filename: string
+  --dbus
+  --gpu
+  filename?: string
 ]: nothing -> any {
-  r --can-bind-all=$can_bind_all --internet=$internet --edit-file $filename --args [$filename] $env.EDITOR
+  (
+    r
+      --can-bind-all=$can_bind_all
+      --internet=$internet
+      --dbus=$dbus
+      --gpu=$gpu
+      --edit-file=$filename
+      --args=([$filename] | compact)
+      $env.EDITOR
+  )
 }
