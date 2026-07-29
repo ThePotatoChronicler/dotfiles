@@ -5,7 +5,10 @@ pub(crate) mod bwrap;
 pub(crate) mod fs;
 pub(crate) mod git;
 
-use std::{fs::DirBuilder, os::unix::fs::DirBuilderExt};
+use std::{
+    fs::DirBuilder,
+    os::unix::{fs::DirBuilderExt, process::CommandExt},
+};
 
 use clap::Parser;
 use log::debug;
@@ -54,9 +57,5 @@ pub fn cmd(args: Args) -> anyhow::Result<()> {
 
     debug!("bwrap command: {command:?}");
 
-    let mut bwrap_process = command.spawn().map_err(Into::<BwrapStartError>::into)?;
-
-    bwrap_process.wait()?;
-
-    Ok(())
+    Err(BwrapStartError::from(command.exec()).into())
 }

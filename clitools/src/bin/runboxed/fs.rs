@@ -6,6 +6,8 @@ use std::{
 
 use crate::git;
 
+/// Returns the git directory, or current working directory if it cannot be found
+/// Can return both a relative and absolute path!
 pub fn extract_project_directory(filename: Option<&str>) -> Result<PathBuf, std::io::Error> {
     match filename {
         Some(filename) => {
@@ -16,7 +18,13 @@ pub fn extract_project_directory(filename: Option<&str>) -> Result<PathBuf, std:
             } else {
                 let parent = path.parent();
                 let git_dir = match parent {
-                    Some(p) if p != "" => git::find_dir(Some(p)),
+                    Some(parent) if parent != "" => git::find_dir(Some(parent)).map(|r| {
+                        r.map(|d| {
+                            // This result is relative to `parent`,
+                            // so we have to absolute this here, otherwise the information is gone
+                            parent.join(d)
+                        })
+                    }),
                     _ => git::find_dir(None),
                 }?;
 
