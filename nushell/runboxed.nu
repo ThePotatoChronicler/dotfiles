@@ -216,8 +216,8 @@ export def main [
       ...(
         if $gui {
           [
-            --bind-try ($env.HOME)/.cache/fontconfig ($env.HOME)/.cache/fontconfig
-            --bind-try ($env.HOME)/.cache/glycin ($env.HOME)/.cache/glycin
+            --ro-bind-try ($env.HOME)/.cache/fontconfig ($env.HOME)/.cache/fontconfig
+            --ro-bind-try ($env.HOME)/.cache/glycin ($env.HOME)/.cache/glycin
             --ro-bind-try ($env.HOME)/.config/vulkan ($env.HOME)/.config/vulkan
             --ro-bind-try ($env.HOME)/.config/dconf ($env.HOME)/.config/dconf
             --ro-bind-try ($env.HOME)/.config/kdedefaults ($env.HOME)/.config/kdedefaults

@@ -14,7 +14,19 @@ export def btop [] {
 
 export alias rm = rm -I
 
-use ./runboxed.nu
+# use ./runboxed.nu
+
+extern runboxed [
+  --can-bind-all      # Allow binding to overly-permissive folders, like /, /home, or $HOME
+  --dbus              # Share dbus
+  --edit-file: path   # Says that the executable is an editor, about to edit this file
+  --gpu               # Share gpu
+  --gui               # Shares things possibly necessary to run GUIs
+  --internet (-i)     # Enable internet
+  --setsid            # Creates new process group session (bwrap --new-session)
+  --help (-h)         # Print help
+  ...command: string,
+]
 
 export alias r = runboxed
 
@@ -25,15 +37,24 @@ export def e [
   --gpu
   filename?: string
 ]: nothing -> any {
-  (
-    runboxed
-      --can-bind-all=$can_bind_all
-      --internet=$internet
-      --dbus=$dbus
-      --gpu=$gpu
-      --edit-file=$filename
-      --setsid
-      --args=([$filename] | compact)
-      $env.EDITOR
-  )
+  let args = ([$filename] | compact)
+
+  if $env._POTATO_RUNBOXED? != "1" {
+    (
+      runboxed
+        ...(if $can_bind_all { [--can-bind-all] })
+        ...(if $internet { [--internet] })
+        ...(if $dbus { [--dbus] })
+        ...(if $gpu { [--gpu] })
+        ...(if $filename != null {
+          [--edit-file $filename]
+        })
+        --setsid
+        --
+        $env.EDITOR
+        ...$args
+    )
+  } else {
+    ^$env.EDITOR ...$args
+  }
 }

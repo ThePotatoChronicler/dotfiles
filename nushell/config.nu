@@ -12,6 +12,11 @@ if ($env.HOME | path join "Scripts" | path exists) {
 let is_boxed = $env._POTATO_RUNBOXED? == "1"
 
 if $nu.is-interactive {
+  use std/util "path add"
+
+  # Using debug build, since the program isn't performance critical, and might have issues
+  path add ($nu.config-path | path dirname -n 2 | path join clitools/target/debug)
+  
   $env.PROMPT_COMMAND = {||
     let dir = match (do -i { $env.PWD | path relative-to $nu.home-dir }) {
       null => $env.PWD
