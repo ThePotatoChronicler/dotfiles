@@ -30,31 +30,4 @@ extern runboxed [
 
 export alias r = runboxed
 
-export def e [
-  --can-bind-all
-  --internet (-i)
-  --dbus
-  --gpu
-  filename?: string
-]: nothing -> any {
-  let args = ([$filename] | compact)
-
-  if $env._POTATO_RUNBOXED? != "1" {
-    (
-      runboxed
-        ...(if $can_bind_all { [--can-bind-all] })
-        ...(if $internet { [--internet] })
-        ...(if $dbus { [--dbus] })
-        ...(if $gpu { [--gpu] })
-        ...(if $filename != null {
-          [--edit-file $filename]
-        })
-        --setsid
-        --
-        $env.EDITOR
-        ...$args
-    )
-  } else {
-    ^$env.EDITOR ...$args
-  }
-}
+export alias e = helix

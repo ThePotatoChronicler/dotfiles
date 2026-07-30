@@ -15,8 +15,9 @@ use log::debug;
 use thiserror::Error;
 
 use crate::{
-    Args, SpecialExecutable,
+    Args,
     bwrap::environment::{DefaultDeferredEnvironment, DeferredEnvironment, Environment},
+    executable::SpecialExecutable,
     fs::{extract_project_directory, is_protected_directory},
 };
 
@@ -28,22 +29,12 @@ struct ProtectedPathError {
     backtrace: Backtrace,
 }
 
-pub fn build(
-    args: &Args,
-    special_executable: Option<&SpecialExecutable>,
-    environment: Environment,
-) -> anyhow::Result<Command> {
-    build_with_env(
-        args,
-        special_executable,
-        environment,
-        DefaultDeferredEnvironment,
-    )
+pub fn build(args: &Args, environment: Environment) -> anyhow::Result<Command> {
+    build_with_env(args, environment, DefaultDeferredEnvironment)
 }
 
 pub fn build_with_env<DE: DeferredEnvironment>(
     args: &Args,
-    special_executable: Option<&SpecialExecutable>,
     environment: Environment,
     deferred_environment: DE,
 ) -> anyhow::Result<Command> {
@@ -123,7 +114,7 @@ pub fn build_with_env<DE: DeferredEnvironment>(
         cmd.arg("--ro-bind-try").args([&path, &path]);
     }
 
-    if let Some(SpecialExecutable::Nu) = special_executable {
+    if let Some(SpecialExecutable::Nu) = args.special_executable {
         deferred_environment.create_directory(Path::new("/tmp/editor-tmp"))?;
         deferred_environment.create_empty_file(Path::new("/tmp/editor-tmp/nushell_history.txt"))?;
 
@@ -308,6 +299,7 @@ pub fn build_with_env<DE: DeferredEnvironment>(
         .arg(&project_directory);
 
     cmd.arg("--");
+    cmd.arg(&args.executable_path);
     cmd.args(&args.args);
 
     Ok(cmd)
