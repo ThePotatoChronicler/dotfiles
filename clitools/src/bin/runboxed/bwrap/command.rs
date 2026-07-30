@@ -18,7 +18,7 @@ use crate::{
     Args,
     bwrap::environment::{DefaultDeferredEnvironment, DeferredEnvironment, Environment},
     executable::SpecialExecutable,
-    fs::{extract_project_directory, is_protected_directory},
+    fs::{extract_project_directory, is_protected_directory, normalize_path},
 };
 
 #[derive(Debug, Error)]
@@ -271,14 +271,7 @@ pub fn build_with_env<DE: DeferredEnvironment>(
     let project_directory = if project_directory.is_absolute() {
         project_directory
     } else {
-        // We must use PWD to preserve the symlinks in the current directory
-        // PWD might not exist or be wrong (not handled here),
-        // at which point we go back to classic `current_dir()`
-        let mut cwd_relative =
-            std::env::var_os("PWD").map_or_else(|| std::env::current_dir(), |s| Ok(s.into()))?;
-
-        cwd_relative.push(project_directory);
-        cwd_relative.normalize_lexically().unwrap_or(cwd_relative)
+        normalize_path(&project_directory).unwrap_or(project_directory)
     };
 
     debug!("Canonical project directory: {project_directory:?}");

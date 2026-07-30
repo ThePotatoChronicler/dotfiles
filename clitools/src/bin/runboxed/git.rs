@@ -5,7 +5,11 @@ use std::{
     process::{Command, Stdio},
 };
 
+use log::trace;
+
 pub fn find_dir(path: Option<&Path>) -> std::io::Result<Option<PathBuf>> {
+    trace!("finding git path for {path:?}");
+
     debug_assert!(match path {
         Some(path) => path.is_dir(),
         None => true,
