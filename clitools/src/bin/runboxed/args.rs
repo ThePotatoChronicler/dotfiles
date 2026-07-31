@@ -5,8 +5,11 @@ use clap::Parser;
 use crate::executable::SpecialExecutable;
 
 #[derive(Parser, Debug, Clone)]
+/// Run a program in a limited namespace,
+/// only having access to a limited amount of the filesystem
+/// and restrictive permissions
 pub(crate) struct CmdlineArgs {
-    /// Arguments for the program
+    /// Program to run (defaults to $SHELL)
     #[arg(trailing_var_arg = true, num_args = 0..)]
     pub args: Vec<String>,
 
@@ -33,6 +36,10 @@ pub(crate) struct CmdlineArgs {
     /// Enable internet
     #[arg(long, short)]
     pub internet: bool,
+
+    /// Avoids binding a project
+    #[arg(long)]
+    pub no_project: bool,
 
     /// Prevents special handling of certain programs
     #[arg(long)]
@@ -68,8 +75,68 @@ pub(crate) struct Args {
     /// Enable internet
     pub internet: bool,
 
+    /// Avoids binding a project
+    pub no_project: bool,
+
     /// Creates new process group session (bwrap --new-session)
     pub setsid: bool,
 
     pub special_executable: Option<SpecialExecutable>,
+}
+
+#[macro_export]
+macro_rules! __args__simple_opt_var_expr {
+    ($name: ident) => {
+        var_os(concatcp!(
+            "RUNBOXED_",
+            map_ascii_case!(Case::Upper, stringify!($name))
+        ))
+        .is_some_and(is_var_enabled)
+    };
+}
+
+#[macro_export]
+macro_rules! __args__simple_opt_impl2 {
+    ($name:ident, $special_executable:ident) => {
+        $crate::config::$name($special_executable) || $crate::__args__simple_opt_var_expr!($name)
+    };
+}
+
+#[macro_export]
+macro_rules! __args__simple_opt_impl3 {
+    ($name:ident, $special_executable:ident, $from:ident) => {
+        config::$name($special_executable)
+            || $from.$name
+            || $crate::__args__simple_opt_var_expr!($name)
+    };
+}
+
+#[macro_export]
+macro_rules! make_args {
+    (
+        Args { $($manual_fields:tt)* },
+        [$($simple_opts:ident),*],
+        special_executable = $special_executable:ident $(,)?
+    ) => {
+        Args {
+            $(
+                $simple_opts: $crate::__args__simple_opt_impl2!($simple_opts, $special_executable),
+            )*
+            $($manual_fields)*
+        }
+    };
+
+    (
+        Args { $($manual_fields:tt)* },
+        [$($simple_opts:ident),*],
+        special_executable = $special_executable:ident,
+        take_from = $take_from:ident $(,)?
+    ) => {
+        Args {
+            $(
+                $simple_opts: $crate::__args__simple_opt_impl3!($simple_opts, $special_executable, $take_from),
+            )*
+            $($manual_fields)*
+        }
+    };
 }

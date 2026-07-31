@@ -33,6 +33,9 @@ pub fn build(args: &Args, environment: Environment) -> anyhow::Result<Command> {
     build_with_env(args, environment, DefaultDeferredEnvironment)
 }
 
+// Config directories that are simple and safe to share
+const SIMPLE_CONFIG_DIRS: [&'static str; 4] = ["helix", "fish", "nushell", "btop"];
+
 pub fn build_with_env<DE: DeferredEnvironment>(
     args: &Args,
     environment: Environment,
@@ -106,7 +109,7 @@ pub fn build_with_env<DE: DeferredEnvironment>(
             .collect::<PathBuf>(),
     );
 
-    for config_dir in ["helix", "fish", "nushell"] {
+    for config_dir in SIMPLE_CONFIG_DIRS {
         let path: PathBuf = [home, Path::new(".config"), Path::new(config_dir)]
             .iter()
             .collect();
@@ -264,32 +267,34 @@ pub fn build_with_env<DE: DeferredEnvironment>(
         }
     }
 
-    let project_directory = extract_project_directory(args.edit_file.as_deref())?;
+    if !args.no_project {
+        let project_directory = extract_project_directory(args.edit_file.as_deref())?;
 
-    debug!("Project directory: {project_directory:?}");
+        debug!("Project directory: {project_directory:?}");
 
-    let project_directory = if project_directory.is_absolute() {
-        project_directory
-    } else {
-        normalize_path(&project_directory).unwrap_or(project_directory)
-    };
-
-    debug!("Canonical project directory: {project_directory:?}");
-
-    if is_protected_directory(&project_directory) {
-        return Err(anyhow::anyhow!(ProtectedPathError {
-            backtrace: Backtrace::capture(),
-        }));
-    }
-
-    cmd.arg("--bind")
-        .arg(
+        let project_directory = if project_directory.is_absolute() {
             project_directory
-                .canonicalize()
-                .as_deref()
-                .unwrap_or(&project_directory),
-        )
-        .arg(&project_directory);
+        } else {
+            normalize_path(&project_directory).unwrap_or(project_directory)
+        };
+
+        debug!("Canonical project directory: {project_directory:?}");
+
+        if is_protected_directory(&project_directory) {
+            return Err(anyhow::anyhow!(ProtectedPathError {
+                backtrace: Backtrace::capture(),
+            }));
+        }
+
+        cmd.arg("--bind")
+            .arg(
+                project_directory
+                    .canonicalize()
+                    .as_deref()
+                    .unwrap_or(&project_directory),
+            )
+            .arg(&project_directory);
+    }
 
     cmd.arg("--");
     cmd.arg(&args.executable_path);

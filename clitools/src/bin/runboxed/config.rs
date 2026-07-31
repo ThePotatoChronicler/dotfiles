@@ -19,5 +19,6 @@ opt!(gpu);
 opt!(gui);
 opt!(dbus);
 opt!(internet);
+opt!(no_project);
 opt!(setsid, [Helix]);
 opt!(editor, [Helix]);

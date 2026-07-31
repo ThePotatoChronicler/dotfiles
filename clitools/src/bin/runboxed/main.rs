@@ -34,6 +34,8 @@ use crate::{
     fs::find_executable,
 };
 
+use const_format::{Case, concatcp, map_ascii_case};
+
 #[derive(Debug, Error)]
 #[error("failed to start bwrap")]
 struct BwrapStartError {
@@ -77,13 +79,7 @@ fn main() -> anyhow::Result<!> {
 
     debug!("behave as: {behave_as:?}");
 
-    let can_bind_all_var = || var_os("RUNBOXED_CAN_BIND_ALL").is_some_and(is_var_enabled);
-    let dbus_var = || var_os("RUNBOXED_DBUS").is_some_and(is_var_enabled);
     let edit_file_var = || var_os("RUNBOXED_EDIT_FILE");
-    let gpu_var = || var_os("RUNBOXED_GPU").is_some_and(is_var_enabled);
-    let gui_var = || var_os("RUNBOXED_GUI").is_some_and(is_var_enabled);
-    let internet_var = || var_os("RUNBOXED_INTERNET").is_some_and(is_var_enabled);
-    let setsid_var = || var_os("RUNBOXED_SETSID").is_some_and(is_var_enabled);
 
     fn get_first_file_arg(
         special_executable: Option<SpecialExecutable>,
@@ -98,6 +94,8 @@ fn main() -> anyhow::Result<!> {
         }
     }
 
+    let can_bind_all_var = || var_os("RUNBOXED_CAN_BIND_ALL").is_some_and(is_var_enabled);
+
     let path_var = std::env::var_os("PATH");
 
     let args = if let Some(_) = behave_as {
@@ -111,24 +109,23 @@ fn main() -> anyhow::Result<!> {
         let edit_file =
             get_first_file_arg(special_executable, &raw_cmd_args).or_else(edit_file_var);
 
-        Args {
-            special_executable,
-            executable_path: std::path::absolute(Path::new(&behave_as))?
-                .file_name()
-                .map(|p| find_executable(Path::new(p), &path_var))
-                .flatten()
-                .map(Cow::into_owned)
-                .map(Into::into)
-                .ok_or_else(|| anyhow!("cannot find executable to run"))?,
-            args: raw_cmd_args,
-            can_bind_all: can_bind_all_var(),
-            dbus: config::dbus(special_executable) || dbus_var(),
-            edit_file,
-            gpu: config::gpu(special_executable) || gpu_var(),
-            gui: config::gui(special_executable) || gui_var(),
-            internet: config::internet(special_executable) || internet_var(),
-            setsid: config::setsid(special_executable) || setsid_var(),
-        }
+        make_args!(
+            Args {
+                special_executable,
+                executable_path: std::path::absolute(Path::new(&behave_as))?
+                    .file_name()
+                    .map(|p| find_executable(Path::new(p), &path_var))
+                    .flatten()
+                    .map(Cow::into_owned)
+                    .map(Into::into)
+                    .ok_or_else(|| anyhow!("cannot find executable to run"))?,
+                args: raw_cmd_args,
+                can_bind_all: can_bind_all_var(),
+                edit_file,
+            },
+            [dbus, gpu, gui, internet, setsid, no_project],
+            special_executable = special_executable,
+        )
     } else {
         let mut cmd_args = CmdlineArgs::parse_from(raw_cmd_args);
 
@@ -168,18 +165,18 @@ fn main() -> anyhow::Result<!> {
             .or_else(|| get_first_file_arg(special_executable, &args))
             .or_else(edit_file_var);
 
-        Args {
-            special_executable,
-            executable_path: executable,
-            args,
-            can_bind_all: cmd_args.can_bind_all || can_bind_all_var(),
-            dbus: cmd_args.dbus || config::dbus(special_executable) || dbus_var(),
-            edit_file,
-            gpu: cmd_args.gpu || config::gpu(special_executable) || gpu_var(),
-            gui: cmd_args.gui || config::gui(special_executable) || gui_var(),
-            internet: cmd_args.internet || config::internet(special_executable) || internet_var(),
-            setsid: cmd_args.setsid || config::setsid(special_executable) || setsid_var(),
-        }
+        make_args!(
+            Args {
+                special_executable,
+                executable_path: executable,
+                args,
+                can_bind_all: cmd_args.can_bind_all || can_bind_all_var(),
+                edit_file,
+            },
+            [dbus, gpu, gui, internet, setsid, no_project],
+            special_executable = special_executable,
+            take_from = cmd_args
+        )
     };
 
     debug!("args: {args:?}");

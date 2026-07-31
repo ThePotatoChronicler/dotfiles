@@ -23,6 +23,8 @@ extern runboxed [
   --gpu               # Share gpu
   --gui               # Shares things possibly necessary to run GUIs
   --internet (-i)     # Enable internet
+  --no-project        # Avoids binding a project
+  --not-special       # Prevents special handling of certain programs  
   --setsid            # Creates new process group session (bwrap --new-session)
   --help (-h)         # Print help
   ...command: string,
